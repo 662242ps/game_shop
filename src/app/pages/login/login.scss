@@ -1,0 +1,319 @@
+/* ============ Login Page (Slow, Smooth, Hover Scale, No Disappearing Inputs) ============ */
+
+:host { display:block; min-height:100vh; }
+
+/* ===== BG + Page fade-in (ใช้เฉพาะ opacity/blur) ===== */
+.login-bg{
+  position: relative;
+  inline-size: 100%;
+  min-block-size: 100svh;
+  margin: 0;
+  padding: clamp(10px, 2.2vw, 20px);
+  background: center / cover no-repeat fixed
+              url('../../../assets/images/bg/รูปพื้นหลัง.png');
+  display:grid; place-items:center;
+  overflow-x:hidden;
+  animation: pageFadeIn 1s cubic-bezier(.22,.7,.18,1) both;
+
+  &::before{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(1100px 740px at 50% 56%, rgba(0,0,0,.22), transparent 62%),
+      linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+    pointer-events:none;
+  }
+  &::after{ content:none !important; display:none !important; }
+
+  color-scheme: dark;
+}
+
+/* ===== Theme ===== */
+$ink: #d5feff;
+$panel-border: #8cf2ff;
+$ui-bg: #1f0537;
+$accent: #88f1ff;
+
+/* ===== Card (slow & smooth scale; no flicker) ===== */
+.card{
+  position:relative;
+  width: min(520px, 90vw);
+  min-block-size: clamp(440px, 58vh, 500px);
+  padding: clamp(16px, 2.2vw, 28px) clamp(22px, 3vw, 30px) 22px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(45,60,128,.70), rgba(14,18,32,.62));
+  border: 3.5px solid rgba($panel-border, .95);
+  box-shadow: 0 22px 60px rgba(0,0,0,.30),
+              inset 0 0 0 9999px rgba(255,255,255,.015);
+  backdrop-filter: blur(4px) saturate(108%);
+  -webkit-backdrop-filter: blur(4px) saturate(108%);
+  display:flex; flex-direction:column; align-items:center;
+
+  /* เข้าหน้าการ์ด: ใช้เฉพาะ opacity/blur */
+  animation: cardFadeIn .9s .08s cubic-bezier(.22,.7,.18,1) both;
+
+  /* Hover scale ที่ลื่นและไม่กระพริบ */
+  transform: translate3d(0,0,0);
+  transform-origin: center top;
+  transition: transform 380ms cubic-bezier(.22,.7,.18,1);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  overflow: hidden;
+}
+.card.leaving{ animation: cardFadeOut .5s cubic-bezier(.22,.7,.18,1) both; }
+
+/* Hover/FocusWithin: ขยายเสมอ */
+.card:hover{ transform: translate3d(0,-8px,0) scale(1.03); }
+.card:active,
+.card:focus-within{ transform: translate3d(0,-4px,0) scale(1.018); }
+
+/* ===== Title ===== */
+.title{
+  text-align:center;
+  font-size: clamp(28px, 4.6vw, 38px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing:.6px;
+  margin: 6px 0 10px;
+  text-shadow:
+    0 1px 0 #88f1ff,
+    0 2px 0 #88f1ff,
+    0 3px 0 #88f1ff,
+    0 4px 0 #120326,
+    0 9px 14px rgba(0,0,0,.55);
+  -webkit-text-stroke: .6px rgba(18,3,38,.28);
+}
+
+/* ===== Logo: ลอยช้า/นุ่ม ===== */
+.logo-ring{
+  inline-size: 140px; block-size: 140px;
+  margin: 8px auto 18px;
+  border-radius: 50%;
+  position: relative;
+  background:
+    radial-gradient(40% 40% at 50% 45%, rgba(255,255,255,.05), transparent 60%),
+    $ui-bg;
+  box-shadow: 0 12px 24px rgba(0,0,0,.36), inset 0 0 18px rgba(120,140,255,.14);
+  animation: floaty 8s ease-in-out infinite;
+
+  &::after{
+    content:''; position:absolute; inset:0; margin:auto;
+    inline-size: 92px; block-size: 92px;
+    background: no-repeat center / contain url('../../../assets/logos/1.svg');
+    filter: drop-shadow(0 1.5px 1.5px rgba(0,0,0,.35));
+    transition: transform 360ms cubic-bezier(.22,.7,.18,1);
+  }
+}
+.logo-ring:hover::after{ transform: scale(1.06); }
+
+/* ===== Form: step-in ปลอดภัย (ไม่มี opacity:0 ฐาน) ===== */
+.form{
+  width: min(470px, 95%);
+  margin-top: 10px;
+  display:grid; gap: 16px;
+
+  > *{
+    animation: itemIn .8s .18s cubic-bezier(.22,.7,.18,1) both;
+  }
+  > *:nth-child(2){ animation-delay:.30s }
+  > *:nth-child(3){ animation-delay:.42s }
+  > *:nth-child(4){ animation-delay:.54s }
+  > *:nth-child(5){ animation-delay:.66s }
+}
+.label{
+  color: $ink;
+  font-weight: 800;
+  font-size: clamp(14px, 1.5vw, 18px);
+  margin-top: 4px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.28);
+}
+
+/* ===== Inputs: hover/focus เคลื่อนที่มากขึ้นและช้าลง ===== */
+input{
+  height: 54px;
+  border-radius: 14px;
+  border: 0;
+  padding: 0 14px;
+
+  /* คอนทราสต์สูง มองเห็นชัดบนการ์ด */
+  background: rgba(31,5,55,.92);
+  color: $ink;
+  font-size: clamp(15px, 1.6vw, 17px);
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.08),
+    0 0 0 1px rgba(255,255,255,.04);
+  outline: 2px solid transparent;
+  caret-color: $accent;
+
+  transition:
+    background-color 300ms cubic-bezier(.22,.7,.18,1),
+    outline-color     300ms cubic-bezier(.22,.7,.18,1),
+    box-shadow        340ms cubic-bezier(.22,.7,.18,1),
+    transform         260ms cubic-bezier(.22,.7,.18,1),
+    filter            260ms cubic-bezier(.22,.7,.18,1);
+
+  &::placeholder{ color: rgba($ink,.70); transition: opacity 240ms cubic-bezier(.22,.7,.18,1); }
+
+  &:hover{
+    transform: translateY(-2px) scale(1.012);
+    filter: brightness(1.03);
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.12),
+      0 2px 10px rgb(35, 193, 255);
+  }
+
+  &:focus,
+  &:focus-visible{
+    transform: translateY(-3px) scale(1.016);
+    outline-color: rgba(136,241,255,.55);
+    box-shadow:
+      inset 0 0 0 2px rgba(136,241,255,.95),
+      0 0 0 4px rgba(136,241,255,.22);
+    animation: inputFocusGlow 1.4s ease-out .02s 1;
+  }
+  &:focus::placeholder{ opacity:.45; }
+
+  &:active{
+    transform: translateY(0) scale(.992);
+    filter: none;
+  }
+}
+
+/* ===== Autofill: ให้สีเข้มคงเดิม ===== */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus{
+  box-shadow:
+    0 0 0 1000px #1f0537 inset,
+    inset 0 0 0 1px rgba(255,255,255,.06) !important;
+  -webkit-text-fill-color: #d5feff;
+  caret-color: #88f1ff;
+  border-radius: 14px;
+  transition: background-color 9999s ease-in-out 0s;
+  background-clip: padding-box;
+}
+input:-moz-autofill{
+  box-shadow:
+    0 0 0 1000px #1f0537 inset,
+    inset 0 0 0 1px rgba(255,255,255,.06) !important;
+  -moz-text-fill-color: #d5feff;
+  caret-color: #88f1ff;
+  border-radius: 14px;
+}
+input:-webkit-autofill:focus,
+input:-moz-autofill:focus{
+  box-shadow:
+    0 0 0 1000px #1f0537 inset,
+    inset 0 0 0 1px rgba(136,241,255,.9),
+    0 0 0 4px rgba(136,241,255,.22) !important;
+}
+
+/* ===== Buttons ===== */
+.actions{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap: 18px; margin-top: 20px;
+  @media (max-width: 560px){ grid-template-columns:1fr; }
+}
+.btn{
+  appearance:none; display:inline-flex; align-items:center; justify-content:center;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2.5px solid rgba(170,150,255,.26);
+  background: $ui-bg; color: $ink;
+  letter-spacing:.3px; font-weight: 900; text-decoration:none; cursor:pointer;
+  transition:
+    transform 260ms cubic-bezier(.22,.7,.18,1),
+    filter   240ms cubic-bezier(.22,.7,.18,1),
+    box-shadow 260ms cubic-bezier(.22,.7,.18,1),
+    letter-spacing 220ms cubic-bezier(.22,.7,.18,1);
+  box-shadow: 0 18px 26px rgba(0,0,0,.28), inset 0 0 0 9999px rgba(255,255,255,.02);
+
+  &:hover{
+    transform: translateY(-3px) scale(1.05);
+    filter: brightness(1.08);
+    letter-spacing:.38px;
+  }
+  &:focus-visible{
+    outline: none;
+    box-shadow:
+      0 18px 26px rgba(0,0,0,.28),
+      0 0 0 4px rgba(136,241,255,.28),
+      0 0 0 8px rgba(136,241,255,.14);
+  }
+  &:active{
+    transform: translateY(0) scale(.985);
+    box-shadow:
+      0 10px 16px rgba(0,0,0,.28),
+      inset 0 14px 34px rgba(0,0,0,.28);
+  }
+  &:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
+}
+.btn.primary{
+  border-color: rgba(170,150,255,.34);
+  box-shadow: 0 14px 28px rgba(0,0,0,.30), 0 0 0 2px rgba(170,150,255,.10) inset;
+  text-shadow:
+    0 1px 0 #120326,
+    0 2px 0 #120326,
+    0 3px 0 #120326,
+    0 8px 10px rgba(0,0,0,.5);
+}
+.btn.ghost{ text-shadow: none; }
+
+/* ===== Mobile ===== */
+@media (max-width: 640px){
+  .card{
+    width: min(480px, 96vw);
+    min-block-size: clamp(420px, 62vh, 480px);
+    padding: 14px 14px 18px;
+    border-radius: 20px;
+    transition: transform 360ms cubic-bezier(.22,.7,.18,1);
+  }
+  .title{ font-size: clamp(24px, 6vw, 32px); margin: 4px 0 8px; }
+  .logo-ring{ inline-size: 120px; block-size: 120px; margin: 6px auto 14px; }
+  .logo-ring::after{ inline-size: 84px; block-size: 84px; }
+  .form{ width: 94%; }
+  input{ height: 52px; font-size: 16px; }
+}
+
+/* ===== Reduce motion ===== */
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
+
+/* ========== Keyframes ========== */
+@keyframes pageFadeIn{
+  from{ opacity:0; filter: blur(10px) saturate(96%); }
+  to  { opacity:1; filter: blur(0)  saturate(108%); }
+}
+@keyframes cardFadeIn{
+  from{ opacity:0; filter: blur(3px); }
+  to  { opacity:1; filter: blur(0); }
+}
+@keyframes cardFadeOut{
+  from{ opacity:1; filter: blur(0); }
+  to  { opacity:0; filter: blur(3px); }
+}
+@keyframes itemIn{
+  from{ opacity:0; transform: translateY(12px); }
+  to  { opacity:1; transform: none; }
+}
+@keyframes floaty{
+  0%,100%{ transform: translateY(0) }
+  50%    { transform: translateY(-10px) }
+}
+@keyframes inputFocusGlow{
+  0%   { box-shadow: inset 0 0 0 2px rgba(136,241,255,.95), 0 0 0 0  rgba(136,241,255,.24); }
+  60%  { box-shadow: inset 0 0 0 2px rgba(136,241,255,.95), 0 0 0 10px rgba(136,241,255,.12); }
+  100% { box-shadow: inset 0 0 0 2px rgba(136,241,255,.95), 0 0 0 4px  rgba(136,241,255,.20); }
+}
+
+/* ===== Small helpers ===== */
+.error { color: #ffb9b9; text-shadow: 0 1px 0 rgba(0,0,0,.45); }
+
+/* ========== HOTFIX: ให้ปุ่ม/ฟอร์มอยู่บนสุด และไม่โดนทับคลิก ========== */
+.login-bg { isolation: isolate; }         /* แยก stacking context */
+.login-bg::before { z-index: 0; }         /* พื้นหลังอยู่ชั้นล่าง */
+.card, .form, .actions { z-index: 2; position: relative; }
+.actions .btn { z-index: 3; position: relative; }
+.logo-ring::after { pointer-events: none; } /* โลโก้ไม่รับคลิกแทนปุ่ม */

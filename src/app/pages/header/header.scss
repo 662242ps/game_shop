@@ -1,0 +1,284 @@
+/* ===== Theme ===== */
+$bg: #1f0537;
+$fg: #d5feff;
+$active-bg: rgba(213, 254, 255, 0.12);
+$active-border: rgba(213, 254, 255, 0.8);
+
+/* ===== Brand logo ===== */
+.brand-logo{
+  inline-size: 64px;
+  block-size:  64px;
+  display: inline-block;
+  background: no-repeat left center / contain url('../../../assets/logos/1.svg');
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.25));
+}
+
+/* ===== Header layout ===== */
+.app-header{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(12px, 2.6vw, 24px);
+  padding: 10px 16px;
+  min-height: 72px;
+  background: $bg;
+  color: $fg;
+  border-bottom: 2px solid rgba(213, 254, 255, 0.12);
+}
+
+/* ===== Brand ===== */
+.brand{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+/* ===== Nav (pill buttons) ===== */
+.nav{
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(24px, 4vw, 44px);
+}
+
+.nav-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: 18px;
+
+  /* กรอบเดียวอยู่ที่นี่ */
+  border: 2px solid transparent;
+  background: transparent;
+
+  /* สีปุ่ม (ตัวอักษร + ไอคอนจะตาม currentColor) */
+  color: #d5feff;            /* ปกติ */
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    border-color .2s ease,
+    background-color .2s ease,
+    transform .06s ease,
+    color .15s ease;
+
+  &:focus,
+  &:focus-visible{ outline: none; }   /* กันกรอบซ้อนจาก outline */
+
+  &:hover{
+    background: $active-bg;
+    color: #ffffff;                   /* hover = ขาว */
+    transform: translateY(-1px);
+  }
+
+  &.active{
+    border-color: $active-border;     /* กรอบเดียวที่นี่ */
+    background: $active-bg;
+    color: #ffffff;                   /* active = ขาว */
+    box-shadow: none;
+  }
+
+  .label{ white-space: nowrap; }
+}
+
+/* ===== Icons ===== */
+/* Fallback เริ่มต้น: ใช้รูปจริง (แสดงแน่ ๆ) */
+.icon{
+  inline-size: 28px;
+  block-size:  28px;
+  flex: 0 0 auto;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: 0; outline: none; box-shadow: none;
+  /* ❌ อย่าใส่ -webkit-mask/mask: none !important ที่นี่ */
+  /* ❌ อย่าใส่ filter: ... !important ที่นี่ */
+}
+.i-2{ background-image: url('../../../assets/icons/2.svg'); } /* ร้านค้า */
+.i-3{ background-image: url('../../../assets/icons/3.svg'); } /* คลังเกม */
+.i-4{ background-image: url('../../../assets/icons/4.svg'); } /* ตะกร้า */
+.i-5{ background-image: url('../../../assets/icons/5.svg'); } /* ผู้ใช้ทั้งหมด */
+.i-6{ background-image: url('../../../assets/icons/6.svg'); } /* โค้ดส่วนลด */
+
+/* Progressive enhancement: ใช้ mask เพื่อ “ย้อมสีด้วย currentColor” */
+@supports (-webkit-mask: url("")) {
+  .icon{ background-image: none; background-color: currentColor; }
+  .i-2{ -webkit-mask: url('../../../assets/icons/2.svg') no-repeat center/contain; }
+  .i-3{ -webkit-mask: url('../../../assets/icons/3.svg') no-repeat center/contain; }
+  .i-4{ -webkit-mask: url('../../../assets/icons/4.svg') no-repeat center/contain; }
+  .i-5{ -webkit-mask: url('../../../assets/icons/5.svg') no-repeat center/contain; }
+  .i-6{ -webkit-mask: url('../../../assets/icons/6.svg') no-repeat center/contain; }
+}
+@supports (mask: url("")) {
+  .icon{ background-image: none; background-color: currentColor; }
+  .i-2{ mask: url('../../../assets/icons/2.svg') no-repeat center/contain; }
+  .i-3{ mask: url('../../../assets/icons/3.svg') no-repeat center/contain; }
+  .i-4{ mask: url('../../../assets/icons/4.svg') no-repeat center/contain; }
+  .i-5{ mask: url('../../../assets/icons/5.svg') no-repeat center/contain; }
+  .i-6{ mask: url('../../../assets/icons/6.svg') no-repeat center/contain; }
+}
+
+/* ===== Right side (ชื่อซ้าย รูปขวา) ===== */
+.right{
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+}
+
+.profile{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row-reverse;     /* รูปขวา ชื่อซ้าย */
+  padding: 6px 10px;
+  border-radius: 12px;
+
+  /* ปกติยังไม่ครอบ */
+  border: 2px solid transparent;
+  cursor: pointer;
+
+  transition: border-color .2s ease, background-color .2s ease, transform .06s ease;
+  outline: none;
+}
+.profile:hover{ background: rgba(213,254,255,.12); transform: translateY(-1px); }
+
+/* ครอบแบบติดค้าง */
+.profile.is-active{
+  border-color: rgba(213,254,255,.8);
+  background: rgba(213,254,255,.12);
+}
+.profile:active{
+  border-color: rgba(213,254,255,.8);
+  background: rgba(213,254,255,.12);
+}
+
+.name{
+  color: #d5feff;
+  font-weight: 900;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
+
+/* วงกลมกรอบอวตาร */
+.avatar{
+  inline-size: 40px;
+  block-size:  40px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+
+  /* สำคัญ: ตัดส่วนที่เกินกรอบวงกลม */
+  overflow: hidden;
+  position: relative;
+
+  border: 2px solid rgba(213,254,255,.35);
+  background:
+    radial-gradient(80% 80% at 50% 30%, rgba(255,255,255,.06), transparent 60%),
+    rgba(213,254,255,.08);
+  color: #d5feff;
+  font-weight: 900;
+}
+
+/* รูปข้างในให้ “พอดีวง” เสมอ */
+.avatar > img{
+  position: absolute;
+  inset: 0;                 /* top:0; right:0; bottom:0; left:0 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;   /* เผื่อมี style ภายนอก */
+}
+
+
+/* ===== Responsive ===== */
+@media (max-width: 680px){
+  .brand .brand-text{ display: none; }
+  .nav .nav-item   { padding: 10px 12px; }
+  .nav .nav-item .label{ display: none; }
+}
+
+/* ===== Logout button (สวย ๆ เข้าธีม) ===== */
+.btn-logout{
+  --btn-bg-1: #e9fdff;
+  --btn-bg-2: #c9f4ff;
+  --btn-fg:  #0f2230;
+  --btn-bd:  #bfe8f0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 16px 10px 18px;
+  border-radius: 14px;
+  border: 2px solid var(--btn-bd);
+  background: linear-gradient(180deg, var(--btn-bg-1), var(--btn-bg-2));
+  color: var(--btn-fg);
+  text-decoration: none;
+  font-weight: 900;
+  line-height: 1;
+
+  /* glass + soft shadow */
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.18),
+    inset 0 0 0 9999px rgba(255,255,255,.05);
+  backdrop-filter: blur(2px);
+
+  transition:
+    transform .12s ease,
+    filter .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.btn-logout:hover{
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.22),
+    0 0 0 3px rgba(197,243,255,.15) inset;
+  border-color: #aee3f0;
+}
+
+.btn-logout:active{
+  transform: translateY(0);
+  box-shadow:
+    0 6px 14px rgba(0,0,0,.2),
+    inset 0 10px 28px rgba(0,0,0,.08);
+}
+
+.btn-logout:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(197,243,255,.45),
+    0 10px 22px rgba(0,0,0,.22);
+}
+
+/* ป้ายไอคอนข้างขวา */
+.logout-badge{
+  inline-size: 34px;
+  block-size: 34px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 2px solid var(--btn-bd);
+  background: rgba(255,255,255,.25);
+  box-shadow: inset 0 0 0 9999px rgba(255,255,255,.05);
+}
+
+.logout-badge .bi{
+  font-size: 18px;
+  line-height: 1;
+  color: var(--btn-fg);
+}
+
+/* ย่อ padding นิดหน่อยบนจอเล็ก */
+@media (max-width: 680px){
+  .btn-logout{ padding: 8px 12px 8px 14px; }
+  .logout-badge{ inline-size: 30px; block-size: 30px; }
+}
+

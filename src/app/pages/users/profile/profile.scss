@@ -1,0 +1,150 @@
+/* ===== ฉากหลังโทนเดียวกับแอป ===== */
+.profile-bg{
+  min-height: 100svh;
+  padding: clamp(12px, 2vw, 24px);
+  padding-top: clamp(8px, 1.2vw, 14px);
+  background: #1a0830 url('../../../../assets/images/bg/รูปพื้นหลัง.png') center/cover fixed no-repeat;
+  display: grid; place-items: start center;
+}
+
+/* ===== กรอบใหญ่ + ระยะห่างจาก header ===== */
+.panel{
+  position: relative;
+  width: min(1200px, 94vw);
+  margin-top: clamp(8px, 1.2vw, 18px);   /* ลดให้ชิด header ขึ้น */
+  border-radius: 20px;
+  border: 4px solid rgba(140,242,255,.55);
+  background: rgba(18,5,34,.86);
+  box-shadow: 0 24px 60px rgba(0,0,0,.35), inset 0 0 0 9999px rgba(255,255,255,.015);
+  padding: clamp(16px, 3vw, 28px);
+  color: #dffbff;
+}
+
+/* ===== หัวเรื่อง ===== */
+.heading{
+  font-size: clamp(22px, 3.2vw, 34px);
+  margin: 4px 6px 18px;
+  font-weight: 900;
+  letter-spacing: .4px;
+}
+
+/* ===== เนื้อหา 2 คอลัมน์ ===== */
+.content{
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: clamp(16px, 3vw, 32px);
+
+  @media (max-width: 900px){
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== การ์ดอวตารซ้าย - ให้ "รูปเท่าช่อง" พอดี ===== */
+.avatar-card{
+  background: #f5ae20;
+  border-radius: 16px;
+  min-height: 420px;
+  display: grid;
+  place-items: stretch;     /* ดันลูกให้ยืดเต็มทั้งกว้าง/สูง */
+  overflow: hidden;         /* ตัดภาพให้โค้งตามกรอบ */
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.08), 0 14px 32px rgba(0,0,0,.25);
+  margin: 0;                /* reset figure */
+}
+.avatar-img{
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;        /* ครอบเต็มกรอบ รักษาสัดส่วน */
+  border-radius: inherit;   /* มุมโค้งเนียนกับกรอบ */
+}
+.avatar-fallback{
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: inherit;
+  background: #2b1b4a;
+  color: #e9ffff;
+  display: grid; place-items: center;
+  font-size: clamp(64px, 11vw, 120px);
+  font-weight: 900; text-shadow: 0 4px 16px rgba(0,0,0,.35);
+}
+
+/* ===== ขวา: รายละเอียด ===== */
+.info{
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  gap: clamp(12px, 1.6vw, 18px);
+  padding-top: 6px;
+}
+.row{
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 560px){
+    grid-template-columns: 130px 1fr;
+  }
+
+  .label{
+    color: #ccf8ff;
+    font-weight: 900;
+    letter-spacing: .4px;
+  }
+  .value{
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+}
+
+/* ===== ลิงก์ Wallet Balance > ===== */
+.wallet-link{
+  display: inline-flex; align-items: center; gap: 6px;
+  text-decoration: none;
+  color: #d6faff; font-weight: 800;
+  padding: 4px 2px;
+  border-bottom: 2px dotted rgba(214,250,255,.35);
+  transition: filter .2s ease;
+  .chev{ font-size: 1.2em; line-height: 1; }
+  &:hover{ filter: brightness(1.15); }
+}
+
+/* ===== ปุ่มมุมล่างขวา ===== */
+.actions{
+  position: absolute;
+  right: clamp(14px, 2.2vw, 24px);
+  bottom: clamp(14px, 2.2vw, 24px);
+  display: flex; gap: 12px; align-items: center;
+}
+.btn{
+  appearance: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: .3px;
+  background: #1f0537;
+  color: #d5feff;
+  border: 2px solid rgba(170,150,255,.26);
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  box-shadow: 0 12px 24px rgba(0,0,0,.28), inset 0 0 0 9999px rgba(255,255,255,.02);
+
+  &:hover{ transform: translateY(-2px); filter: brightness(1.06); }
+  &:active{ transform: translateY(0); box-shadow: 0 8px 18px rgba(0,0,0,.28), inset 0 14px 34px rgba(0,0,0,.28); }
+}
+.btn.ghost{
+  background: transparent;
+  border-color: rgba(170,150,255,.22);
+}
+.btn.logout{
+  background: #c5f3ff;
+  color: #0b1235;
+  border-color: #bee9ff;
+  box-shadow: 0 12px 24px rgba(0,0,0,.28);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+
+/* ===== สถานะโหลด/ผิดพลาด ===== */
+.state{ padding: 28px 10px; text-align: center; }
+.note{ opacity: .9; }
+.error{ color: #ffb9b9; }

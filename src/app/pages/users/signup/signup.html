@@ -1,0 +1,70 @@
+<div class="signup-bg">
+  <section class="card" role="form" aria-labelledby="signupTitle" id="signupCard">
+    <h1 class="title" id="signupTitle">สมัครสมาชิก</h1>
+
+    <!-- วงอวตาร: คลิกเพื่ออัปโหลด -->
+    <label class="avatar" for="avatarInput" aria-label="เปลี่ยนรูปโปรไฟล์">
+      <img *ngIf="avatarPreview; else defaultAvatar" [src]="avatarPreview" alt="รูปผู้ใช้" />
+      <ng-template #defaultAvatar>
+        <i class="bi bi-person-circle avatar-icon" aria-hidden="true"></i>
+      </ng-template>
+      <span class="avatar-hint">เปลี่ยนรูป</span>
+    </label>
+    <input id="avatarInput" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+
+    <div class="avatar-caption">รูปผู้ใช้</div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="form"
+      autocomplete="off"
+      [attr.autocomplete]="'off'"
+      novalidate>
+
+      <!-- HONEYPOT -->
+      <input type="text" tabindex="-1" aria-hidden="true"
+             autocomplete="username"
+             style="position:absolute;left:-9999px;opacity:0;height:0;width:0;border:0;padding:0" />
+      <input type="password" tabindex="-1" aria-hidden="true"
+             autocomplete="new-password"
+             style="position:absolute;left:-9999px;opacity:0;height:0;width:0;border:0;padding:0" />
+
+      <label class="label" for="username">ชื่อผู้ใช้</label>
+      <input id="username" type="text" formControlName="username"
+             placeholder="กรอกชื่อผู้ใช้ของคุณ" autocomplete="off" />
+
+      <label class="label" for="email">อีเมล</label>
+      <input id="email" type="email" formControlName="email"
+             placeholder="กรอกอีเมลของคุณ" autocomplete="off"
+             autocapitalize="off" spellcheck="false" inputmode="email" />
+
+      <label class="label" for="password">รหัสผ่าน</label>
+      <input id="password" type="password" formControlName="password"
+             placeholder="กรอกรหัสผ่านของคุณ" autocomplete="off" />
+
+      <label class="label" for="confirm">ยืนยันรหัสผ่าน</label>
+      <input id="confirm" type="password" formControlName="confirm"
+             placeholder="กรอกรหัสผ่านของคุณอีกครั้ง" autocomplete="off" />
+
+      <!-- error: password ไม่ตรง -->
+      <p class="error" *ngIf="form.hasError('passwordsNotMatch') && (f.confirm.touched || f.confirm.dirty)">
+        รหัสผ่านไม่ตรงกัน
+      </p>
+
+      <!-- server messages -->
+      <p class="ok" *ngIf="okMsg">{{ okMsg }}</p>
+      <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+      <div class="actions">
+        <a routerLink="/login" class="btn ghost">เข้าสู่ระบบ</a>
+        <button class="btn primary" type="submit"
+                [disabled]="form.invalid || loading"
+                [attr.aria-busy]="loading ? 'true' : null">
+          <span *ngIf="!loading">สมัครสมาชิก</span>
+          <span *ngIf="loading">กำลังสมัคร…</span>
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

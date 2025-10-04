@@ -1,0 +1,84 @@
+<app-header role="user"></app-header>
+
+<div class="edit-bg">
+  <section class="panel">
+    <h1 class="heading">แก้ไขโปรไฟล์</h1>
+
+    <div class="content" *ngIf="!loading; else loadingTpl">
+
+      <!-- อินพุตไฟล์ (ซ่อน) -->
+      <input
+        #fileInput
+        class="file-input"
+        type="file"
+        accept="image/*"
+        (change)="onFileChange($event)" />
+
+      <!-- ซ้าย: พรีวิวรูป (คลิกเพื่อเปลี่ยนรูป) -->
+      <figure
+        class="avatar-card"
+        role="button"
+        tabindex="0"
+        aria-label="กดเพื่อเปลี่ยนรูปโปรไฟล์"
+        (click)="fileInput.click()"
+        (keydown.enter)="fileInput.click()"
+        (keydown.space)="fileInput.click()"
+      >
+        <!-- พรีวิวไฟล์ใหม่ -->
+        <img
+          *ngIf="newPreviewUrl; else currentImg"
+          [src]="newPreviewUrl"
+          alt="รูปโปรไฟล์ (พรีวิว)"
+          class="avatar-img" />
+
+        <!-- รูปเดิม -->
+        <ng-template #currentImg>
+          <img
+            *ngIf="currentImageUrl; else noimg"
+            [src]="currentImageUrl"
+            alt="รูปโปรไฟล์ปัจจุบัน"
+            class="avatar-img" />
+          <ng-template #noimg>
+            <div class="avatar-fallback">U</div>
+          </ng-template>
+        </ng-template>
+
+        <!-- โอเวอร์เลย์: เปลี่ยนรูป -->
+        <div class="pick-overlay">
+          <i class="bi bi-camera" aria-hidden="true"></i>
+          <span>เปลี่ยนรูป</span>
+        </div>
+      </figure>
+
+      <!-- ขวา: ฟอร์มแก้ไข -->
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <label class="field">
+          <span class="label">ชื่อผู้ใช้</span>
+          <input
+            class="input"
+            type="text"
+            formControlName="username"
+            placeholder="ตั้งชื่อที่ต้องการ" />
+          <small class="hint" *ngIf="form.controls.username.invalid && form.controls.username.touched">
+            กรุณากรอกชื่อผู้ใช้ (ไม่เกิน 50 ตัวอักษร)
+          </small>
+        </label>
+
+        <!-- (ไม่จำเป็นต้องมี input:file ซ้ำด้านล่างแล้ว เพราะคลิกที่รูปเพื่อเลือกไฟล์แทน) -->
+
+        <div class="actions">
+          <a class="btn ghost" routerLink="/user/profile">ยกเลิก</a>
+          <button class="btn primary" type="submit" [disabled]="saving || form.invalid">
+            {{ saving ? 'กำลังบันทึก…' : 'บันทึกการเปลี่ยนแปลง' }}
+          </button>
+        </div>
+
+        <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </form>
+    </div>
+
+    <ng-template #loadingTpl>
+      <div class="state">กำลังโหลด…</div>
+    </ng-template>
+  </section>
+</div>

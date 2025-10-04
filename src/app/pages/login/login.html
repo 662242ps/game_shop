@@ -1,0 +1,69 @@
+<!-- src/app/pages/login/login.html -->
+<div class="login-bg">
+  <section class="card">
+    <h1 class="title">เข้าสู่ระบบ</h1>
+    <div class="logo-ring"></div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="form"
+      autocomplete="off"
+      [attr.autocomplete]="'off'"
+      novalidate
+    >
+      <!-- honeypot -->
+      <input
+        type="text"
+        tabindex="-1"
+        aria-hidden="true"
+        autocomplete="username"
+        style="position:absolute;left:-9999px;opacity:0;height:0;width:0;border:0;padding:0"
+      />
+      <input
+        type="password"
+        tabindex="-1"
+        aria-hidden="true"
+        autocomplete="new-password"
+        style="position:absolute;left:-9999px;opacity:0;height:0;width:0;border:0;padding:0"
+      />
+
+      <label for="email" class="label">อีเมล</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="กรอกอีเมลของคุณ"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        inputmode="email"
+      />
+
+      <label for="password" class="label">รหัสผ่าน</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="กรอกรหัสผ่านของคุณ"
+        autocomplete="off"
+      />
+
+      <!-- แสดงข้อความผิดพลาดจากเซิร์ฟเวอร์ -->
+      <div class="error" *ngIf="errorMsg" aria-live="assertive">{{ errorMsg }}</div>
+
+      <div class="actions">
+        <a routerLink="/user/signup" class="btn ghost">สมัครสมาชิก</a>
+        <button
+          type="submit"
+          class="btn primary"
+          [disabled]="form.invalid || loading"
+          [attr.aria-busy]="loading ? 'true' : null"
+        >
+          <span *ngIf="!loading">เข้าสู่ระบบ</span>
+          <span *ngIf="loading">กำลังเข้าสู่ระบบ…</span>
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

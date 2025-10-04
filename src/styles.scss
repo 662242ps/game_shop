@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset พื้นฐานกัน margin ขาวของ body */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;               /* <— ตัด margin ขาวเริ่มต้น */
+  padding: 0;
+  background: #0b0718;     /* สีพื้นหลังสำรอง (ไว้กรณีรูปยังโหลดไม่ทัน) */
+}
+
+app-root, app-root > * {
+  display: block;
+  min-height: 100%;
+}

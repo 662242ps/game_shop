@@ -1,0 +1,57 @@
+<app-header role="user"></app-header>
+
+<div class="profile-bg">
+  <section class="panel">
+    <h1 class="heading">ข้อมูลผู้ใช้</h1>
+
+    <div class="content" *ngIf="!loading && user; else loadingOrError">
+      <!-- ซ้าย: อวตาร -->
+      <figure class="avatar-card">
+        <ng-container *ngIf="user.profile_image; else avatarFallback">
+          <img [src]="user.profile_image!" alt="รูปโปรไฟล์" class="avatar-img" />
+        </ng-container>
+        <ng-template #avatarFallback>
+          <div class="avatar-fallback">{{ avatarInitial }}</div>
+        </ng-template>
+      </figure>
+
+      <!-- ขวา: รายละเอียด -->
+      <div class="info">
+        <div class="row">
+          <div class="label">ชื่อ</div>
+          <div class="value">{{ user.username || '-' }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">อีเมล</div>
+          <div class="value">{{ user.email }}</div>
+        </div>
+
+        <div class="row">
+          <div class="label">กระเป๋าเงิน</div>
+          <div class="value">
+            <a class="wallet-link" routerLink="/user/wallet"
+               [attr.aria-label]="'ยอดเงินคงเหลือ '+(user.wallet_balance||0)+' บาท'">
+              Wallet Balance <span class="chev">›</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ปุ่มมุมล่างขวา -->
+      <div class="actions">
+        <a class="btn ghost" routerLink="/user/profile-edit">แก้ไขโปรไฟล์</a>
+        <button class="btn logout" type="button" (click)="logout()">
+          ออกจากระบบ <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <ng-template #loadingOrError>
+      <div class="state">
+        <div *ngIf="loading" class="note">กำลังโหลดข้อมูลผู้ใช้…</div>
+        <div *ngIf="!loading && errorMsg" class="error">{{ errorMsg }}</div>
+      </div>
+    </ng-template>
+  </section>
+</div>

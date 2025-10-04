@@ -1,0 +1,70 @@
+<header class="app-header">
+  <!-- Brand -->
+  <a class="brand" [routerLink]="menus[0]?.path || '/'" aria-label="ไปหน้า ร้านค้า" (click)="setActive('shop')">
+    <span class="brand-logo" aria-hidden="true"></span>
+  </a>
+
+  <!-- เมนู -->
+  <nav class="nav" *ngIf="menus?.length">
+    <ng-container *ngFor="let m of menus; trackBy: trackByKey">
+      <a *ngIf="m.path; else noRoute"
+         class="nav-item"
+         [routerLink]="m.path"
+         [class.active]="isActive(m)"
+         (click)="setActive(m.key)"
+         [title]="m.label">
+        <span [class]="'icon ' + m.iconClass" aria-hidden="true"></span>
+        <span class="label">{{ m.label }}</span>
+      </a>
+
+      <ng-template #noRoute>
+        <button type="button"
+                class="nav-item"
+                [class.active]="isActive(m)"
+                (click)="setActive(m.key)"
+                [title]="m.label">
+          <span [class]="'icon ' + m.iconClass" aria-hidden="true"></span>
+          <span class="label">{{ m.label }}</span>
+        </button>
+      </ng-template>
+    </ng-container>
+  </nav>
+
+  <!-- ขวา (ผู้ใช้ทั่วไป) -->
+  <div class="right" *ngIf="role === 'user'">
+  <a
+    class="profile"
+    [class.is-active]="profileActive"
+    role="link"
+    tabindex="0"
+    [routerLink]="profileRoute"
+    (click)="onProfileNav()"
+    (keydown.enter)="onProfileNav()"
+    (keydown.space)="onProfileNav()"
+    title="โปรไฟล์ของฉัน"
+  >
+    <!-- วงกลมอวตาร: ถ้ามีรูป → แสดง <img> / ไม่มีรูป → ตัวอักษร -->
+    <div class="avatar" aria-hidden="true">
+      <ng-container *ngIf="avatarUrl; else avatarLetter">
+        <img [src]="avatarUrl!" alt="รูปโปรไฟล์" (error)="onAvatarError()">
+      </ng-container>
+      <ng-template #avatarLetter>{{ avatarText }}</ng-template>
+    </div>
+
+
+    <span class="name">{{ displayName }}</span>
+  </a>
+</div>
+
+
+  <!-- ขวา (ผู้ดูแลระบบ) -->
+  <div class="right" *ngIf="role === 'admin'">
+  <a class="btn-logout" routerLink="/login" (click)="logout()" title="ออกจากระบบ">
+    ออกจากระบบ
+    <span class="logout-badge" aria-hidden="true">
+      <i class="bi bi-box-arrow-right"></i>
+    </span>
+  </a>
+</div>
+
+</header>
