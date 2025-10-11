@@ -1,8 +1,17 @@
+:host{
+  position: sticky;     /* ให้เกาะขอบบนของ viewport */
+  top: 0;
+  z-index: 2000;        /* สูงกว่าการ์ด/โมดัลต่าง ๆ */
+  display: block;
+}
+
+
+
 /* ===== Theme ===== */
 $bg: #1f0537;
 $fg: #d5feff;
-$active-bg: rgba(213, 254, 255, 0.12);
-$active-border: rgba(213, 254, 255, 0.8);
+$active-bg: rgba(70, 238, 241, 0.053);
+$active-border: rgb(213, 254, 255);
 
 /* ===== Brand logo ===== */
 .brand-logo{
@@ -23,7 +32,12 @@ $active-border: rgba(213, 254, 255, 0.8);
   min-height: 72px;
   background: $bg;
   color: $fg;
-  border-bottom: 2px solid rgba(213, 254, 255, 0.12);
+  border-bottom: 2px solid #8eb2b3;
+
+  /* (ออฟชัน) เพิ่มไฮไลต์เส้นกรอบแบบเรืองนิดๆ ให้เข้าธีม */
+  box-shadow:
+    0 0 0 1px rgba(213,254,255,.10) inset,
+    0 8px 22px rgba(0,0,0,.25);
 }
 
 /* ===== Brand ===== */
@@ -280,5 +294,28 @@ $active-border: rgba(213, 254, 255, 0.8);
 @media (max-width: 680px){
   .btn-logout{ padding: 8px 12px 8px 14px; }
   .logout-badge{ inline-size: 30px; block-size: 30px; }
+}
+
+/* ── ลบเส้นใต้/เส้นขีดใด ๆ ใต้ชื่อผู้ใช้ ─────────────────────────── */
+.profile,
+.profile:link,
+.profile:visited,
+.profile:hover,
+.profile:active,
+.profile:focus{
+  text-decoration: none !important;
+}
+
+.profile .name{
+  text-decoration: none !important;   /* กัน underline จาก link ทับมา */
+  border-bottom: none !important;     /* กันเคสใช้ border ทำเส้น */
+  box-shadow: none !important;        /* กันเอฟเฟกต์เงาที่ดูเป็นเส้น */
+  outline: 0;                         /* ไม่เอาเส้น focus ที่ตัวอักษร */
+}
+
+/* กัน selector รวมระดับ global ที่อาจใส่ underline ให้ลิงก์ */
+.app-header a,
+.app-header a *{
+  text-decoration: none !important;
 }
 

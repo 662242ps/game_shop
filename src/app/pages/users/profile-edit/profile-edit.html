@@ -20,9 +20,9 @@
         role="button"
         tabindex="0"
         aria-label="กดเพื่อเปลี่ยนรูปโปรไฟล์"
-        (click)="fileInput.click()"
-        (keydown.enter)="fileInput.click()"
-        (keydown.space)="fileInput.click()"
+        (click)="triggerPick()"
+        (keydown.enter)="triggerPick()"
+        (keydown.space)="triggerPick()"
       >
         <!-- พรีวิวไฟล์ใหม่ -->
         <img
@@ -50,8 +50,8 @@
         </div>
       </figure>
 
-      <!-- ขวา: ฟอร์มแก้ไข -->
-      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- ขวา: ฟอร์มแก้ไข (เพิ่ม id เพื่อให้ปุ่มนอกฟอร์ม submit ได้) -->
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" id="editForm">
         <label class="field">
           <span class="label">ชื่อผู้ใช้</span>
           <input
@@ -64,17 +64,17 @@
           </small>
         </label>
 
-        <!-- (ไม่จำเป็นต้องมี input:file ซ้ำด้านล่างแล้ว เพราะคลิกที่รูปเพื่อเลือกไฟล์แทน) -->
-
-        <div class="actions">
-          <a class="btn ghost" routerLink="/user/profile">ยกเลิก</a>
-          <button class="btn primary" type="submit" [disabled]="saving || form.invalid">
-            {{ saving ? 'กำลังบันทึก…' : 'บันทึกการเปลี่ยนแปลง' }}
-          </button>
-        </div>
-
+        <!-- ย้ายปุ่มออกจากฟอร์มแล้ว -->
         <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
       </form>
+    </div>
+
+    <!-- ✅ ปุ่มล่างขวาของ "การ์ดใหญ่" -->
+    <div class="panel-actions">
+      <a class="btn ghost" routerLink="/user/profile">ยกเลิก</a>
+      <button class="btn primary" type="submit" form="editForm" [disabled]="saving || form.invalid">
+        {{ saving ? 'กำลังบันทึก…' : 'บันทึกการเปลี่ยนแปลง' }}
+      </button>
     </div>
 
     <ng-template #loadingTpl>

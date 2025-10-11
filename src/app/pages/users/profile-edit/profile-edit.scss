@@ -1,4 +1,8 @@
-/* ===== ฉากหลังโทนเดียวกับแอป (ระยะห่างจาก header เท่ากับหน้า profile) ===== */
+/* ===== tuning ระยะให้ไม่ติดขอบ ===== */
+$gutter-x: clamp(16px, 2.4vw, 28px);     /* ระยะห่างขอบขวา */
+$actions-bottom: clamp(14px, 1.8vw, 22px); /* ระยะห่างขอบล่าง (ใช้ร่วมกับการ์ดรูป) */
+
+/* ===== ฉากหลัง ===== */
 .edit-bg{
   min-height: 100svh;
   padding: clamp(12px, 2vw, 24px);
@@ -7,7 +11,7 @@
   display: grid; place-items: start center;
 }
 
-/* ===== กรอบหลัก (ขนาด, เส้นขอบ, เงา เหมือนหน้า profile) ===== */
+/* ===== การ์ดใหญ่ (panel) ===== */
 .panel{
   position: relative;
   width: min(1200px, 94vw);
@@ -20,7 +24,7 @@
   color: #dffbff;
 }
 
-/* ===== หัวเรื่อง (ขนาดเดียวกับหน้า profile) ===== */
+/* ===== หัวเรื่อง ===== */
 .heading{
   font-size: clamp(22px, 3.2vw, 34px);
   margin: 4px 6px 18px;
@@ -28,28 +32,33 @@
   letter-spacing: .4px;
 }
 
-/* ===== เลย์เอาต์สองคอลัมน์เหมือนกัน (ซ้าย 380px) ===== */
+/* ===== เลย์เอาต์สองคอลัมน์ ===== */
 .content{
+  position: relative;                 /* ให้ .panel-actions อ้างอิงกรอบนี้ */
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: clamp(16px, 3vw, 32px);
+  align-items: start;
+  padding-bottom: calc(#{$actions-bottom} + 10px);  /* กันปุ่มทับของด้านล่าง */
 
   @media (max-width: 900px){
     grid-template-columns: 1fr;
+    padding-bottom: 0;
   }
 }
 
-/* ===== การ์ดพรีวิวรูปซ้าย: “รูปเท่าช่อง” + มุมโค้ง ===== */
+/* ===== การ์ดพรีวิวรูป ===== */
 .avatar-card{
   position: relative;
   cursor: pointer;
-  background: #f5ae20;
+  background: #20d2f5;
   border-radius: 16px;
   min-height: 420px;
-  display: grid; place-items: stretch;
-  overflow: hidden; /* ตัดรูปให้โค้งตามกรอบ */
+  display: grid;
+  place-items: stretch;
+  overflow: hidden;
   box-shadow: inset 0 0 0 2px rgba(0,0,0,.08), 0 14px 32px rgba(0,0,0,.25);
-  outline: none;
+  margin: 0 0 $actions-bottom 0;   /* ✅ เว้นล่างเท่ากับระยะปุ่ม เพื่อให้ “ระดับเดียวกัน” */
 }
 .avatar-card:focus-visible{
   outline: 3px solid #c5f3ff; outline-offset: 2px;
@@ -57,10 +66,10 @@
 
 /* รูป/ฟอลแบ็ก = เต็มกรอบพอดี */
 .avatar-img{
+  display: block;
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
-  display: block;
   border-radius: inherit;
 }
 .avatar-fallback{
@@ -77,6 +86,8 @@
 /* โอเวอร์เลย์ “เปลี่ยนรูป” */
 .pick-overlay{
   position: absolute; inset: 0;
+  z-index: 2;
+  pointer-events: none;
   display: grid; place-items: center;
   gap: 6px; font-weight: 900;
   color: #eaffff; text-shadow: 0 2px 8px rgba(0,0,0,.35);
@@ -87,7 +98,7 @@
 .avatar-card:hover .pick-overlay,
 .avatar-card:focus-visible .pick-overlay{ opacity: 1; }
 
-/* อินพุตไฟล์ซ่อน (คลิกที่รูปแทน) */
+/* อินพุตไฟล์ซ่อน */
 .file-input{ display: none; }
 
 /* ===== ฟอร์มฝั่งขวา ===== */
@@ -113,12 +124,7 @@
 }
 .hint{ opacity: .8; font-size: .85rem; }
 
-/* ===== ปุ่ม (โทน/ขนาดเดียวกับหน้า profile) ===== */
-.actions{
-  margin-top: 8px;
-  display: flex; gap: 12px;
-  justify-content: flex-end;
-}
+/* ===== ปุ่มพื้นฐาน ===== */
 .btn{
   border-radius: 12px;
   padding: 12px 16px;
@@ -136,6 +142,31 @@
 .btn.ghost{ background: transparent; border-color: rgba(170,150,255,.22); }
 .btn.primary{ background: #c5f3ff; color: #0b1235; border-color: #bee9ff; }
 
+/* ===== ปุ่มล่างขวา (ยึด .content) ===== */
+.panel-actions{
+  position: absolute;
+  right: max(#{$gutter-x}, env(safe-area-inset-right));
+  bottom: max(#{$actions-bottom}, env(safe-area-inset-bottom));  /* ✅ ไม่ชิดขอบล่าง */
+  display: flex;
+  gap: 12px;
+  z-index: 3;
+}
+
+@media (max-width: 900px){
+  .panel-actions{
+    position: static;
+    justify-self: end;
+    margin-top: 12px;
+  }
+}
+
 /* ===== สถานะ/ข้อความ ===== */
 .error{ margin-top: 6px; color: #ffb9b9; }
 .state{ padding: 20px 8px; text-align: center; }
+
+/* (ถ้ายังใช้ .actions ที่หน้าอื่น) */
+.actions{
+  margin-top: 8px;
+  display: flex; gap: 12px;
+  justify-content: flex-end;
+}

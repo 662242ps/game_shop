@@ -1,0 +1,9 @@
+.title-xl{
+  color: #fff;                 /* สีขาว */
+  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
+  font-weight: 900;            /* หนา */
+  letter-spacing: .3px;
+  margin: 0 0 16px;
+  /* ถ้าอยากให้เด่นขึ้นนิด */
+  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+}

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../header/header';
-import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-shop',
   imports: [CommonModule, HeaderComponent],
