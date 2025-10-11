@@ -3,8 +3,10 @@ import { Login } from './pages/login/login';
 import { Signup } from './pages/users/signup/signup';
 import { Shop } from './pages/users/shop/shop';
 import { Shop as AdminShop } from './pages/admin/shop/shop';
+import { AddGameComponent } from './pages/admin/add-game/add-game';
 import { ProfileComponent } from './pages/users/profile/profile';
 import { ProfileEditComponent } from './pages/users/profile-edit/profile-edit';
+import { WalletComponent } from './pages/users/wallet/wallet';
 
 /* ✅ ใหม่ */
 import { Library } from './pages/users/library/library';
@@ -24,11 +26,9 @@ export const routes: Routes = [
       { path: 'shop', component: Shop },
       { path: 'profile', component: ProfileComponent },
       { path: 'profile-edit', component: ProfileEditComponent },
-
-      /* ✅ ใหม่ */
       { path: 'library', component: Library },
       { path: 'cart', component: Cart },
-
+      { path: 'wallet', component: WalletComponent },
       // { path: '', pathMatch: 'full', redirectTo: 'shop' }
     ]
   },
@@ -40,6 +40,7 @@ export const routes: Routes = [
       /* ✅ ใหม่ */
       { path: 'users', component: AdminUsers },
       { path: 'discount', component: AdminDiscount },
+      { path: 'add-game', component: AddGameComponent }
 
       // { path: '', pathMatch: 'full', redirectTo: 'shop' }
     ]

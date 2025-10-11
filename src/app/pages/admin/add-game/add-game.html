@@ -1,0 +1,52 @@
+<app-header role="admin" />
+
+<main class="addgame-bg">
+  <section class="card">
+    <h2 class="title">เพิ่มเกมใหม่</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="grid">
+      <!-- ซ้าย: อัปโหลดภาพ -->
+      <div class="uploader">
+        <label
+          class="upload-box"
+          [class.has-img]="!!previewUrl()"
+          for="image"
+          aria-label="อัปโหลดไฟล์ภาพ"
+        >
+          <!-- แสดงพรีวิวเฉพาะตอนมีรูป -->
+          <img *ngIf="previewUrl()" [src]="previewUrl()!" alt="ตัวอย่างภาพเกม">
+        </label>
+        <input id="image" type="file" accept="image/*" (change)="onPickFile($event)" hidden>
+      </div>
+
+      <!-- ขวา: ฟอร์มรายละเอียด -->
+      <div class="fields">
+        <label>ชื่อ
+          <input type="text" formControlName="name" placeholder="เช่น: Stardew Valley">
+        </label>
+
+        <label>ประเภท
+          <input type="text" formControlName="category" placeholder="เช่น: Simulation / RPG">
+        </label>
+
+        <label>รายละเอียด
+          <textarea rows="5" formControlName="description" placeholder="สรุปจุดเด่น เกมเพลย์ ฯลฯ"></textarea>
+        </label>
+
+        <div class="row-2">
+          <label>วันที่วางขาย
+            <input type="date" formControlName="releaseDate">
+          </label>
+          <label>ราคา
+            <input type="number" formControlName="price" min="0" step="1" placeholder="0">
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn-ghost" (click)="resetForm()">ล้างฟอร์ม</button>
+          <button type="submit" class="btn-primary">เพิ่มเกม</button>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>

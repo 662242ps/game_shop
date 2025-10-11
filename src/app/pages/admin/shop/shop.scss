@@ -1,9 +1,244 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+/* ===== Theme ===== */
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, .78);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169,231,234,.55);
+$blue: #c6f1ff;
+$blue-deep: #0e2e3b;
+
+:host{ display:block; min-height:100vh; color:$fg; background:$bg; }
+
+/* ==== คอนเทนเนอร์หลัก: flex + gap กันการเด้งตอนพิมพ์ค้นหา ==== */
+.shop-bg{
+  inline-size:100%;
+  min-block-size:100svh;
+  padding:clamp(12px,2vw,20px);
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  background:
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    #1f0537;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+    pointer-events:none;
+  }
+}
+
+/* ==== แถบหัวข้อ + ค้นหา (อยู่นอกการ์ด) ==== */
+.topbar.outside{
+  inline-size:min(1280px, 96vw);
+  display:grid;
+  grid-template-columns: 1fr minmax(320px, 460px);
+  align-items:center;
+  gap:14px;
+  margin:0; padding-block:4px 6px; min-block-size:56px;
+}
+.title{
+  font-size: clamp(26px, 3vw, 44px);
+  font-weight: 900; letter-spacing:.4px; margin:0;
+}
+.title-3d{
+  color:#fff;
+  text-shadow:
+    0 1px 0 #88f1ff,
+    0 2px 0 #88f1ff,
+    0 3px 0 #88f1ff,
+    0 4px 0 #120326,
+    0 10px 18px rgba(0,0,0,.35);
+  -webkit-text-stroke: .4px rgba(18,3,38,.25);
+}
+
+/* ค้นหา: ไม่เด้ง, มีโฟกัส, hover ในจอมีเมาส์ */
+.search{
+  position:relative; justify-self:end; inline-size:100%;
+  input{
+    inline-size:100%; height:48px; box-sizing:border-box;
+    border-radius:999px; background:#1a0d2e; color:$fg;
+    border:2px solid $line-weak; padding:0 48px 0 16px; outline:none; font:inherit;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
+    &::placeholder{ color:rgba($fg,.70); }
+    &:focus{ border-color:$line; box-shadow:0 0 0 3px rgba(169,231,234,.25); }
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button{ -webkit-appearance:none; appearance:none; display:none; }
+  }
+  /* hover เฉพาะอุปกรณ์ที่มี hover */
+  @media (hover:hover) and (pointer:fine){
+    input:hover{ transform: translateY(-1px); background:#1b0d2e; }
+  }
+  .glass{
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    inline-size:24px; block-size:24px; pointer-events:none;
+    &::before{
+      content:''; position:absolute; inset:0; margin:auto;
+      inline-size:12px; block-size:12px; border-radius:50%;
+      box-shadow:0 0 0 3px $blue inset;
+    }
+    &::after{
+      content:''; position:absolute; right:-4px; bottom:-4px;
+      inline-size:10px; block-size:2.5px; background:$blue;
+      border-radius:2px; transform:rotate(45deg);
+    }
+  }
+}
+
+/* การ์ดครอบกริด */
+.panel{
+  position:relative; z-index:1;
+  inline-size:min(1280px, 96vw);
+  background:$panel; border:2px solid $line-weak; border-radius:22px;
+  padding:clamp(18px,2.2vw,24px);
+  box-shadow: inset 0 0 0 2px rgba(169,231,234,.18), 0 12px 48px rgba(0,0,0,.38);
+}
+
+/* กริดการ์ด */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(5, minmax(210px, 1fr));
+  gap: clamp(16px, 2vw, 26px);
+  @media (max-width:1180px){ grid-template-columns: repeat(4, 1fr); }
+  @media (max-width:980px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width:720px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width:480px){ grid-template-columns: 1fr; }
+}
+
+/* ===== การ์ดเกม + แอ็คชั่น hover/active ===== */
+.game-card{
+  background: rgba(15, 8, 30, .6);
+  border: 2px solid $line-weak;
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  display:grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "cover  cover"
+    "meta   actions";
+  row-gap: 10px;
+  transition: transform .24s cubic-bezier(.22,.7,.18,1), box-shadow .24s ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+
+  /* hover เฉพาะจอที่มีเมาส์ */
+  @media (hover:hover) and (pointer:fine){
+    &:hover{ transform: translateY(-6px); box-shadow: 0 14px 34px rgba(0,0,0,.32); }
+  }
+  &:active{ transform: translateY(0); box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+}
+
+.cover{
+  grid-area: cover;
+  inline-size:100%; aspect-ratio:3/4; border-radius:14px;
+  background:
+    center / cover no-repeat var(--cover, none),
+    linear-gradient(180deg, rgba(198,241,255,.10), rgba(7,4,16,.40));
+  border:2px solid rgba(169,231,234,.32);
+  transition: filter .35s ease;
+  @media (hover:hover) and (pointer:fine){
+    .game-card:hover &{ filter: brightness(1.06) saturate(1.05); }
+  }
+}
+
+.meta{
+  grid-area: meta;
+  display:flex; flex-direction:column; justify-content:center;
+  min-inline-size:0;
+}
+.name{
+  margin:0 0 6px; font-weight:800; font-size:clamp(14px, 1.6vw, 16px);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.price{ opacity:.9; }
+
+/* ปุ่มแก้ไข/ลบ: hover/active/focus */
+.actions{
+  grid-area: actions;
+  display:flex; gap:10px; align-self:center; justify-self:end; margin-top:2px;
+}
+.act{
+  inline-size:40px; block-size:40px; border-radius:999px;
+  background:$blue; border:2px solid rgba(0,0,0,.12);
+  display:inline-flex; align-items:center; justify-content:center;
+  position:relative; cursor:pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
+  outline: none; -webkit-tap-highlight-color: transparent;
+
+  @media (hover:hover) and (pointer:fine){
+    &:hover{ transform: translateY(-2px) scale(1.06); box-shadow:0 10px 18px rgba(0,0,0,.24); }
+  }
+  &:active{ transform: translateY(0) scale(.96); box-shadow:0 6px 12px rgba(0,0,0,.20); }
+  &:focus-visible{
+    box-shadow:
+      0 10px 18px rgba(0,0,0,.24),
+      0 0 0 3px rgba(198,241,255,.65);
+  }
+}
+.act.edit::before{
+  content:''; position:absolute; inline-size:18px; block-size:4px;
+  background:$blue-deep; border-radius:2px; transform: rotate(-45deg);
+}
+.act.edit::after{
+  content:''; position:absolute; right:10px; bottom:10px;
+  inline-size:6px; block-size:6px; background:$blue-deep;
+  transform: rotate(45deg); clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.act.remove::before{
+  content:''; position:absolute; inline-size:18px; block-size:3px;
+  background:$blue-deep; border-radius:2px;
+}
+
+/* ===== การ์ด "เพิ่มรายการเกม" (ลำดับแรก) + แอ็คชั่น ===== */
+.add-card{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  text-decoration:none; color:inherit; gap:10px; -webkit-tap-highlight-color: transparent;
+}
+.add-card .thumb{
+  inline-size:100%; aspect-ratio:3/4;
+  background:#c3f8ff;
+  border-radius:18px;
+  border:2px solid $line-weak;
+  display:grid; place-items:center;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  will-change: transform;
+
+  @media (hover:hover) and (pointer:fine){
+    .add-card:hover &{ transform: translateY(-4px); box-shadow:0 12px 28px rgba(0,0,0,.24); }
+  }
+  .add-card:active &{ transform: translateY(0); box-shadow:0 8px 24px rgba(0,0,0,.18); }
+}
+.add-card .plus{
+  position:relative; inline-size:100px; block-size:100px;
+  &::before, &::after{
+    content:''; position:absolute; inset:0; margin:auto;
+    background:#2a1c48; border-radius:12px;
+  }
+  &::before{ inline-size:76px; block-size:18px; }
+  &::after { inline-size:18px; block-size:76px; }
+}
+.add-card .add-caption{
+  color:#8cf2ff; text-decoration:none; font-weight:900; letter-spacing:.2px;
+  text-shadow:0 1px 0 rgba(0,0,0,.35);
+}
+.add-card:hover .add-caption{ filter:brightness(1.06); }
+
+/* ===== Responsive: จอเล็ก/มือถือ ===== */
+@media (max-width: 900px){
+  .topbar.outside{
+    grid-template-columns: 1fr;           /* หัวข้อบน ค้นหาล่าง */
+    row-gap: 10px;
+  }
+  .search{ justify-self:stretch; }
+}
+@media (pointer:coarse){                 /* อุปกรณ์สัมผัส */
+  .act{ inline-size:48px; block-size:48px; }            /* เป้าคลิกใหญ่ขึ้น */
+  .search input{ height:52px; }                          /* ช่องค้นหาใหญ่ขึ้น */
+}
+
+/* ===== Reduce motion ===== */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
 }
