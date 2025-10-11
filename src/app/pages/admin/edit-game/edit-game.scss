@@ -1,0 +1,208 @@
+/* ===== Theme ===== */
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, 0.788);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169,231,234,.55);
+$blue-btn: #c6f1ff;
+$blue-btn-text: #0e2e3b;
+
+/* ปุ่มเหลี่ยมขึ้น */
+$btn-radius: 12px;
+
+:host{ display:block; min-height:100vh; background:$bg; color:$fg; }
+
+/* BG ลายจาง ๆ */
+.addgame-bg{
+  inline-size:100%; min-block-size:100svh;
+  padding:clamp(12px,2vw,20px);
+  display:grid; place-items:start center;
+  background:
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    $bg;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+    pointer-events:none;
+  }
+}
+
+/* การ์ดหลัก */
+.card{
+  position:relative; z-index:1;
+  inline-size:min(1180px, 96vw);
+  background: $panel;
+  border: 2px solid $line-weak;
+  border-radius: 22px;
+  padding: clamp(16px, 2.4vw, 24px);
+  box-shadow: inset 0 2px 0 rgba(169,231,234,.18), 0 12px 48px rgba(0,0,0,.38);
+}
+
+/* หัวข้อ */
+.title{ font-size: clamp(22px, 2.4vw, 30px); margin: 0 0 16px; letter-spacing: .4px; }
+
+/* เลย์เอาต์ซ้าย-ขวา */
+.grid{
+  display: grid;
+  grid-template-columns: 1.05fr 1.25fr;
+  gap: clamp(16px, 2vw, 26px);
+  @media (max-width: 1040px){ grid-template-columns: 1fr; }
+}
+
+/* กล่องอัปโหลด */
+.upload-box{
+  display:grid; place-content:center;
+  inline-size: 100%; max-inline-size: 560px;
+  aspect-ratio: 1 / 1;
+  background: #c3f8ff;
+  border: 2px solid $line-weak;
+  border-radius: 18px;
+  box-shadow: inset 0 2px 0 rgba(169,231,234,.35);
+  cursor: pointer; position: relative; isolation: isolate; overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
+
+  background-image: none !important;
+  background-repeat: no-repeat; background-position: center; background-size: 62%;
+  > .placeholder, > .hint, > .bi { display:none !important; }
+
+  &::before{
+    content:''; position:absolute; inset:0; margin:auto;
+    inline-size: 42%; block-size: 42%;
+    background-color: $bg;
+    -webkit-mask: url('../../../../assets/icons/7.svg') no-repeat center / contain;
+            mask: url('../../../../assets/icons/7.svg') no-repeat center / contain;
+    opacity:.92; z-index: 1; transition: transform .18s ease, opacity .18s ease, filter .18s ease;
+  }
+  &::after{
+    content: 'อัปโหลดไฟล์ภาพ';
+    position: absolute; left: 0; right: 0; bottom: 14px; text-align: center;
+    font-weight: 700; color: $blue-btn-text; letter-spacing: .2px; z-index: 2; pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  img{
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center; display: block; border-radius: inherit; z-index: 3;
+  }
+  &.has-img::before, &.has-img::after{ display:none; }
+  &:hover{
+    transform: translateY(-2px) scale(1.012); border-color: $line;
+    box-shadow: inset 0 4px 0 rgba(169,231,234,.45), 0 6px 18px rgba(0,0,0,.18);
+    filter: brightness(1.02);
+  }
+  &:hover::before{ transform: translateY(-2px) scale(1.05); opacity:.98; }
+  &:hover::after { transform: translateY(-1px); }
+}
+
+.hint.small{ opacity:.8; font-size:.92rem; margin-top:8px; }
+
+/* ฟิลด์ฟอร์ม */
+.fields{
+  display:grid; gap: 14px;
+  label{ display:grid; gap: 8px; font-weight: 700; }
+  input, textarea{
+    background: #1b0d2e; color: $fg; border: 2px solid $line-weak;
+    border-radius: 999px; padding: 14px 18px; outline: none; font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    &::placeholder{ color: rgba($fg,.55); }
+    &:focus{ border-color: $line; box-shadow: 0 0 0 3px rgba(169,231,234,.25); background: #180b2a; }
+  }
+  textarea{ border-radius: 16px; resize: vertical; min-height: 160px; }
+}
+
+/* สองคอลัมน์ */
+.row-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; @media (max-width: 720px){ grid-template-columns: 1fr; } }
+
+/* แอ็กชัน */
+.actions{ display:flex; gap: 12px; justify-content: flex-end; margin-top: 2px; }
+.actions-split{
+  justify-content: space-between;
+  .actions-right{ display:flex; gap: 12px; }
+}
+
+/* ปุ่มทั่วไป */
+.btn-primary, .btn-ghost{
+  appearance:none; border-radius: $btn-radius; padding: 12px 16px; font-weight: 800;
+  display:inline-flex; align-items:center; gap: 8px; cursor:pointer;
+  border: 2px solid $line-weak; color: $fg; background: transparent;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12); filter: none;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.btn-primary{
+  background: $blue-btn; color: $blue-btn-text; border-color: rgba(0,0,0,.1);
+  &:hover{ transform: translateY(-1px); background: lighten($blue-btn, 2%); box-shadow: 0 6px 14px rgba(0,0,0,.14); }
+  &:active{ transform: translateY(0); box-shadow: 0 3px 8px rgba(0,0,0,.16); }
+}
+.btn-ghost{
+  background: transparent; color: $fg;
+  &:hover{ transform: translateY(-1px); background: rgba(169,231,234,.08); border-color: $line; box-shadow: 0 6px 14px rgba(0,0,0,.14); }
+  &:active{ transform: translateY(0); box-shadow: 0 3px 8px rgba(0,0,0,.16); }
+}
+
+/* ===== Danger Button (ลบ) ===== */
+$danger:       #ff5978;
+$danger-ink:   #240913;
+$danger-glow:  rgba(255, 89, 120, .45);
+
+.btn-danger{
+  appearance:none; border-radius: $btn-radius; padding: 12px 16px; font-weight: 900;
+  display:inline-flex; align-items:center; gap: 10px; cursor:pointer;
+  color:#fff;
+  background: linear-gradient(180deg, lighten($danger, 4%), $danger);
+  border: 2px solid rgba(0,0,0,.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,.22), 0 0 0 0 rgba($danger, 0);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, background .18s ease, border-color .18s ease;
+
+  @media (hover:hover) and (pointer:fine){
+    &:hover{
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, lighten($danger, 6%), lighten($danger, 2%));
+      box-shadow: 0 10px 22px rgba(0,0,0,.24), 0 0 0 6px $danger-glow;
+    }
+  }
+  &:active{
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(0,0,0,.22), 0 0 0 3px rgba($danger, .30);
+    filter: saturate(1.05);
+  }
+  &:focus-visible{
+    outline: none;
+    box-shadow: 0 8px 18px rgba(0,0,0,.22), 0 0 0 6px $danger-glow;
+  }
+  &:disabled{
+    opacity:.6; cursor:not-allowed; filter: grayscale(.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  }
+
+  /* ไอคอนถังขยะด้วย CSS */
+  .icon-trash{
+    position: relative; inline-size: 18px; block-size: 18px; color: $danger-ink;
+    &::before{
+      content:''; position:absolute; left: 3px; right: 3px; top: 1px; height: 3px;
+      border-radius: 2px; background: currentColor;
+    }
+    &::after{
+      content:''; position:absolute; left: 4px; right: 4px; top: 5px; bottom: 2px;
+      border: 2px solid currentColor; border-top-width: 3px;
+      border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
+      background:
+        linear-gradient(90deg,
+          transparent 33%, currentColor 33% 37%, transparent 37% 63%,
+          currentColor 63% 67%, transparent 67%);
+      opacity:.95;
+    }
+  }
+}
+
+/* Outline ทางเลือก (ถ้าต้องการ) */
+.btn-danger--outline{
+  @extend .btn-danger;
+  background: transparent; color: $fg; border-color: rgba(255, 120, 140, .55);
+  .icon-trash{ color: #ff9fb1; }
+  @media (hover:hover) and (pointer:fine){
+    &:hover{
+      background: rgba(255, 120, 140, .10);
+      box-shadow: 0 10px 22px rgba(0,0,0,.24), 0 0 0 6px rgba(255, 120, 140, .25);
+    }
+  }
+}

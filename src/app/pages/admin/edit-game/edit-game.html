@@ -1,0 +1,59 @@
+<app-header role="admin"></app-header>
+
+<main class="addgame-bg">
+  <section class="card">
+    <h2 class="title">แก้ไขเกม</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="grid" novalidate>
+      <!-- ซ้าย: พรีวิว/เลือกภาพ -->
+      <div class="uploader">
+        <label class="upload-box" [class.has-img]="!!previewUrl()" for="image" aria-label="อัปโหลดไฟล์ภาพ">
+          <ng-container *ngIf="previewUrl(); else noimg">
+            <img [src]="previewUrl()!" alt="ปกเกม">
+          </ng-container>
+          <ng-template #noimg><span class="hint">ยังไม่มีรูป</span></ng-template>
+        </label>
+        <input id="image" type="file" accept="image/*" (change)="onPickFile($event)" hidden>
+        <div class="hint small">หากไม่เลือกไฟล์ใหม่ ระบบจะใช้รูปเดิม</div>
+      </div>
+
+      <!-- ขวา: ฟอร์มรายละเอียด -->
+      <div class="fields">
+        <label>ชื่อ
+          <input type="text" formControlName="name" placeholder="ชื่อเกม">
+        </label>
+
+        <label>ประเภท (category_id)
+          <input type="number" formControlName="category_id" min="1" placeholder="เช่น 1">
+        </label>
+
+        <label>รายละเอียด
+          <textarea rows="5" formControlName="description" placeholder="รายละเอียดเกม"></textarea>
+        </label>
+
+        <div class="row-2">
+          <label>ราคา
+            <input type="number" formControlName="price" min="0" step="1" placeholder="0">
+          </label>
+        </div>
+
+        <!-- แอ็กชัน: ลบซ้าย / ยกเลิก+บันทึก ขวา -->
+        <div class="actions actions-split">
+          <button type="button" class="btn-danger" (click)="remove()" [disabled]="submitting()">
+            <span class="icon-trash" aria-hidden="true"></span>
+            ลบเกม
+          </button>
+
+          <div class="actions-right">
+            <button type="button" class="btn-ghost" (click)="cancel()" [disabled]="submitting()">ยกเลิก</button>
+            <button type="submit" class="btn-primary" [disabled]="submitting()">
+              {{ submitting() ? 'กำลังบันทึก…' : 'บันทึก' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+      </div>
+    </form>
+  </section>
+</main>

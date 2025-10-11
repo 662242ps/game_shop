@@ -1,51 +1,48 @@
-<app-header role="admin" />
+<app-header role="admin"></app-header>
 
 <main class="addgame-bg">
   <section class="card">
     <h2 class="title">เพิ่มเกมใหม่</h2>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="grid">
-      <!-- ซ้าย: อัปโหลดภาพ -->
+    <form [formGroup]="form" (ngSubmit)="submit()" class="grid" novalidate>
       <div class="uploader">
-        <label
-          class="upload-box"
-          [class.has-img]="!!previewUrl()"
-          for="image"
-          aria-label="อัปโหลดไฟล์ภาพ"
-        >
-          <!-- แสดงพรีวิวเฉพาะตอนมีรูป -->
-          <img *ngIf="previewUrl()" [src]="previewUrl()!" alt="ตัวอย่างภาพเกม">
+        <label class="upload-box" [class.has-img]="!!previewUrl()" for="image" aria-label="อัปโหลดไฟล์ภาพ">
+          <ng-container *ngIf="previewUrl(); else noimg">
+            <img [src]="previewUrl()!" alt="ตัวอย่างภาพเกม">
+          </ng-container>
+          <ng-template #noimg><span class="hint">แนบรูปปกเกม</span></ng-template>
         </label>
         <input id="image" type="file" accept="image/*" (change)="onPickFile($event)" hidden>
+        <div class="invalid" *ngIf="form.get('image')?.touched && form.get('image')?.invalid">จำเป็นต้องแนบรูป</div>
       </div>
 
-      <!-- ขวา: ฟอร์มรายละเอียด -->
       <div class="fields">
         <label>ชื่อ
           <input type="text" formControlName="name" placeholder="เช่น: Stardew Valley">
         </label>
 
-        <label>ประเภท
-          <input type="text" formControlName="category" placeholder="เช่น: Simulation / RPG">
+        <label>ประเภท (category_id)
+          <input type="number" formControlName="category_id" min="1" placeholder="เช่น: 1">
         </label>
 
         <label>รายละเอียด
-          <textarea rows="5" formControlName="description" placeholder="สรุปจุดเด่น เกมเพลย์ ฯลฯ"></textarea>
+          <textarea rows="5" formControlName="description" placeholder="สรุปจุดเด่น เกมเพลย์ ฯลฯ (ไม่บังคับ)"></textarea>
         </label>
 
         <div class="row-2">
-          <label>วันที่วางขาย
-            <input type="date" formControlName="releaseDate">
-          </label>
           <label>ราคา
             <input type="number" formControlName="price" min="0" step="1" placeholder="0">
           </label>
         </div>
 
         <div class="actions">
-          <button type="button" class="btn-ghost" (click)="resetForm()">ล้างฟอร์ม</button>
-          <button type="submit" class="btn-primary">เพิ่มเกม</button>
+          <button type="button" class="btn-ghost" (click)="resetForm()" [disabled]="submitting()">ล้างฟอร์ม</button>
+          <button type="submit" class="btn-primary" [disabled]="submitting()">
+            {{ submitting() ? 'กำลังบันทึก…' : 'เพิ่มเกม' }}
+          </button>
         </div>
+
+        <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
       </div>
     </form>
   </section>

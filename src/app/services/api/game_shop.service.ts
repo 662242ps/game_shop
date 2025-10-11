@@ -7,6 +7,8 @@ import { catchError, tap } from 'rxjs/operators';
 import { Constants } from '../../pages/config/constants';
 
 // === Models ===
+import { CreateGamePotsRequest } from '../../models/request/creategame_post_Request';
+import { GamesGetResponse } from '../../models/response/games_get_response';
 import { LoginPostRequest } from '../../models/request/login_post_request';
 import { LoginPostResponse } from '../../models/response/login_post_response';
 import { RegisterPostRequest } from '../../models/request/register_post_request';
@@ -18,8 +20,18 @@ export class GameShopService {
   private http = inject(HttpClient);
   private constants = inject(Constants);
 
-  /** API base: ตัด / ท้ายออกเพื่อกัน // ซ้อน */
+  /** API base (เช่น http://localhost:3000 หรือ https://api.example.com/api) */
   private base = this.constants.API_ENDPOINT.replace(/\/+$/, '');
+
+  /** origin ชัวร์ ๆ (เช่น http://localhost:3000 หรือ https://api.example.com) */
+  private readonly origin = (() => {
+    try {
+      return new URL(this.base).origin;
+    } catch {
+      // fallback กรณี base ไม่ใช่ URL สมบูรณ์: ตัด /api ออกแบบหยาบ ๆ
+      return this.base.replace(/\/+$/, '').replace(/\/api(?=\/|$)/, '');
+    }
+  })();
 
   /** ใช้กับคำขอแบบ JSON เท่านั้น (เช่น login) */
   private json = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -29,11 +41,11 @@ export class GameShopService {
   private static readonly LS_ROLE  = 'role';
   private static readonly LS_TOKEN = 'gs_token';
 
+  // ===== Auth =====
   /**
    * POST /users/login
-   * body: { email, password } (JSON)
-   * return: { id, username, email, role, wallet, ... , token? }
-   * → เซฟ session ลง localStorage ให้ header/โปรไฟล์ใช้งานได้ทันที
+   * body: { email, password }
+   * return: { id, username, email, role, wallet, profile_image?, token? }
    */
   login(payload: LoginPostRequest): Observable<LoginPostResponse> {
     const url = `${this.base}/users/login`;
@@ -41,25 +53,20 @@ export class GameShopService {
       tap((res: any) => {
         const role = String(res?.role || 'user').toLowerCase();
 
-        // map ให้อยู่รูปแบบเดียวกับที่ FE ใช้ใน header/profile
         const saveUser = {
-          id: res?.id ?? res?.user_id,
+          id:       res?.id ?? res?.user_id,
           username: res?.username ?? '',
-          email: res?.email ?? '',
+          email:    res?.email ?? '',
           role,
-          wallet: res?.wallet ?? 0,
+          wallet:   res?.wallet ?? 0,
           profileimage: res?.profile_image ?? res?.profileimage ?? null,
         };
 
         localStorage.setItem(GameShopService.LS_USER, JSON.stringify(saveUser));
         localStorage.setItem(GameShopService.LS_ROLE, role);
 
-        // ถ้า API ส่ง token มาก็บันทึกไว้ (ถ้าไม่ส่งก็ข้าม)
-        if (res?.token) {
-          localStorage.setItem(GameShopService.LS_TOKEN, String(res.token));
-        } else {
-          localStorage.removeItem(GameShopService.LS_TOKEN);
-        }
+        if (res?.token) localStorage.setItem(GameShopService.LS_TOKEN, String(res.token));
+        else localStorage.removeItem(GameShopService.LS_TOKEN);
       }),
       catchError(this.handle)
     );
@@ -67,8 +74,7 @@ export class GameShopService {
 
   /**
    * POST /users/register
-   * ส่งเป็น multipart/form-data (แนบรูปผ่านฟิลด์ profile_image)
-   * - ห้ามตั้ง Content-Type เอง ให้เบราว์เซอร์ตั้ง boundary ให้
+   * ส่งเป็น multipart/form-data (แนบรูปในฟิลด์ profile_image)
    */
   register(payload: RegisterPostRequest): Observable<RegisterPostResponse> {
     const url = `${this.base}/users/register`;
@@ -76,9 +82,7 @@ export class GameShopService {
     fd.append('username', payload.username);
     fd.append('email', payload.email);
     fd.append('password', payload.password);
-    if (payload.profile_image) {
-      fd.append('profile_image', payload.profile_image);
-    }
+    if (payload.profile_image) fd.append('profile_image', payload.profile_image);
     return this.http.post<RegisterPostResponse>(url, fd).pipe(catchError(this.handle));
   }
 
@@ -88,14 +92,13 @@ export class GameShopService {
     return this.http.get<UserDetailResponse>(url).pipe(catchError(this.handle));
   }
 
-  /** PUT /users/:id/update  (แก้ไขโปรไฟล์) */
+  /** PUT /users/:id/update (แก้ไขโปรไฟล์) */
   updateUser(
     id: number | string,
     payload: FormData | { username?: string; profile_image?: File | null }
   ): Observable<UserDetailResponse> {
     const url = `${this.base}/users/${id}/update`;
 
-    // แปลงเป็น FormData หากยังไม่ใช่
     const body: FormData = payload instanceof FormData
       ? payload
       : (() => {
@@ -107,8 +110,7 @@ export class GameShopService {
 
     return this.http.put<UserDetailResponse>(url, body).pipe(
       tap((res: any) => {
-        // API ตอบ { message, user_id, username, profile_image }
-        // → อัปเดต gs_user ใน localStorage
+        // อัปเดต gs_user ใน localStorage ให้ทันสมัย
         const raw = localStorage.getItem(GameShopService.LS_USER);
         if (!raw) return;
         try {
@@ -124,6 +126,39 @@ export class GameShopService {
       catchError(this.handle)
     );
   }
+
+  // ===== Games =====
+  /** GET /games – ดึงรายการเกมทั้งหมด */
+  gamesGetAll(): Observable<GamesGetResponse[]> {
+    const url = `${this.base}/games`; // ถ้า BE เป็น /api/games ให้แก้ให้ตรง
+    return this.http.get<GamesGetResponse[]>(url).pipe(catchError(this.handle));
+  }
+
+  /**
+   * ✅ แปลง path รูปจาก API ให้เป็น URL สมบูรณ์:
+   * - ถ้าได้ URL เต็มมาแล้ว (http/https/data/blob) จะคืนค่าเดิม
+   * - ถ้าได้เป็น path (เช่น uploads/xxx.jpg หรือ /uploads/xxx.jpg)
+   *   จะประกอบกับ origin ของ API (ตัด /api ออกให้เอง) → http(s)://host/uploads/xxx.jpg
+   */
+  toAbsoluteUrl(p?: string | null): string | null {
+  if (!p) return null;
+  // ปรับ \ -> / กันเคส Windows และ trim
+  let s = String(p).trim().replace(/\\/g, '/');
+  if (!s) return null;
+
+  // ถ้าเป็น URL เต็ม/ data/blob อยู่แล้ว → ใช้เลย
+  if (/^(https?:)?\/\//i.test(s) || s.startsWith('data:') || s.startsWith('blob:')) {
+    return s;
+  }
+
+  // ตัด prefix ที่ไม่ต้องการ และลบ / นำหน้า
+  s = s.replace(/^\/+/, '')
+       .replace(/^public\//, '')
+       .replace(/^api\//, '');
+
+  return `${this.origin}/${s}`;
+}
+
 
   // ===== Session helpers =====
   logout(): void {
@@ -151,4 +186,56 @@ export class GameShopService {
       'Request failed';
     return throwError(() => new Error(message));
   }
+   gamesCreate(body: CreateGamePotsRequest, file: File) {
+    const url = `${this.base}/games`; // ถ้า BE เป็น /api/games ให้แก้ให้ตรง
+
+    // เติม created_by จาก session หากยังไม่ถูกตั้งมา
+    const current = this.getCurrentUser();
+    const createdBy = body.created_by ?? current?.id;
+    if (!createdBy) {
+      return throwError(() => new Error('ไม่พบผู้ใช้ (created_by)'));
+    }
+
+    // ประกอบ form-data ให้ตรงกับ multer.single('image')
+    const fd = new FormData();
+    fd.append('name',        body.name);
+    fd.append('price',       String(body.price));
+    // แบ็กเอนด์ใช้ (description || null) → ส่ง '' ได้ จะกลายเป็น null ฝั่งเซิร์ฟเวอร์
+    fd.append('description', (body.description as any) ?? '');
+    fd.append('category_id', String(body.category_id));
+    fd.append('created_by',  String(createdBy));
+    fd.append('image',       file);                 // ⬅️ ต้องชื่อ 'image' เท่านั้น
+
+    // ไม่ต้อง set Content-Type เอง ให้ browser ใส่ boundary
+    return this.http.post<any>(url, fd).pipe(catchError(this.handle));
+  }
+  updateGame(
+  id: number | string,
+  body: Partial<Pick<CreateGamePotsRequest, 'name' | 'price' | 'description' | 'category_id'>> & {
+    image?: File | null;
+  }
+) {
+  // เส้นตามสไตล์โปรเจกต์นี้ให้ใช้ /games/:id/update (เหมือน users)
+  const url = `${this.base}/games/${id}/update`;
+
+  const fd = new FormData();
+  if (body.name        !== undefined) fd.append('name',        String(body.name));
+  if (body.price       !== undefined) fd.append('price',       String(body.price));
+  if (body.description !== undefined) fd.append('description', body.description as any ?? '');
+  if (body.category_id !== undefined) fd.append('category_id', String(body.category_id));
+  if (body.image)                      fd.append('image',      body.image); // multer.single('image')
+
+  return this.http.put<any>(url, fd).pipe(catchError(this.handle));
+}
+
+// == DELETE ==
+deleteGame(id: number | string) {
+  const url = `${this.base}/games/${id}`;
+  return this.http.delete<{ message: string; game_id: number | string }>(url)
+    .pipe(catchError(this.handle));
+}
+getGameById(id: number | string) {
+  const url = `${this.base}/games/${id}`;
+  return this.http.get<GamesGetResponse>(url).pipe(catchError(this.handle));
+}
 }

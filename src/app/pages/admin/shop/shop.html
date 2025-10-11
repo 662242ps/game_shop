@@ -1,8 +1,8 @@
-<app-header role="admin" />
+<app-header role="admin"></app-header>
 
-<main class="shop-bg">
+<main class="shop-bg" [attr.aria-busy]="loading()" [class.is-loading]="loading()">
 
-  <!-- ✅ แถบหัวข้อ + ค้นหา อยู่นอกการ์ด -->
+  <!-- Top bar: title + search -->
   <div class="topbar outside">
     <h2 class="title title-3d">เกมทั้งหมด {{ total() }} เกม</h2>
 
@@ -12,33 +12,65 @@
         placeholder="ค้นหา"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
+        autocomplete="off"
+        spellcheck="false"
         aria-label="ค้นหาเกม" />
       <span class="glass" aria-hidden="true"></span>
     </div>
   </div>
 
-  <section class="panel">
-    <div class="grid">
-      <!-- ✅ การ์ด "เพิ่มรายการเกม" เป็นลำดับที่ 1 และมีข้อความใต้การ์ด -->
+  <!-- Loading / Error -->
+  <section class="panel" *ngIf="loading() || error()">
+    <div class="state" *ngIf="loading()" role="status">กำลังโหลดข้อมูล…</div>
+    <div class="state error" *ngIf="!loading() && error()" role="alert">{{ error() }}</div>
+  </section>
+
+  <!-- Content -->
+  <section class="panel" *ngIf="!loading() && !error()">
+    <div class="grid" *ngIf="filtered().length; else noData">
+
+      <!-- Add-game card -->
       <a class="add-card" routerLink="/admin/add-game" title="เพิ่มรายการเกมที่ขาย">
-        <div class="thumb">
-          <span class="plus" aria-hidden="true"></span>
-        </div>
+        <div class="thumb"><span class="plus" aria-hidden="true"></span></div>
         <div class="add-caption">เพิ่มรายการเกมที่ขาย</div>
       </a>
 
-      <!-- รายการเกม -->
-      <article class="game-card" *ngFor="let g of filtered()">
-        <div class="cover" [style.backgroundImage]="g.cover ? 'url(' + g.cover + ')' : ''"></div>
+      <!-- Game cards -->
+      <article class="game-card" *ngFor="let g of filtered(); trackBy: trackById">
+        <div
+          class="cover"
+          [class.fallback]="!g.cover"
+          [style.background]="bgStyle(g.cover)">
+          <i *ngIf="!g.cover" class="bi bi-controller" aria-hidden="true"></i>
+        </div>
+
         <div class="meta">
           <h3 class="name" [title]="g.name">{{ g.name }}</h3>
           <div class="price">{{ g.price | number }} ฿</div>
         </div>
+
         <div class="actions">
-          <button class="act edit"  type="button" title="แก้ไข" (click)="edit(g)"></button>
-          <button class="act remove" type="button" title="ลบ"   (click)="remove(g)"></button>
-        </div>
+  <button
+    class="act edit"
+    type="button"
+    title="แก้ไข"
+    (click)="edit(g)"
+    aria-label="แก้ไข {{ g.name }}"></button>
+
+  <button
+    class="act remove"
+    type="button"
+    title="ลบ"
+    [disabled]="deletingId() === g.id"
+    (click)="remove(g)"
+    aria-label="ลบ {{ g.name }}"></button>
+</div>
+
       </article>
     </div>
   </section>
+
+  <ng-template #noData>
+    <div class="state empty">ไม่พบเกมที่ตรงกับคำค้น</div>
+  </ng-template>
 </main>

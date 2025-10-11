@@ -1,34 +1,34 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { HeaderComponent } from '../../header/header';
+import { RouterModule, Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-type Game = { id: number; name: string; price: number; cover?: string | null };
+import { HeaderComponent } from '../../header/header';
+import { GameShopService } from '../../../services/api/game_shop.service';
+import { GamesGetResponse } from '../../../models/response/games_get_response';
+
+type GameItem = { id: number; name: string; price: number; cover: string | null };
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, RouterLink],
   templateUrl: './shop.html',
-  styleUrl: './shop.scss'
+  styleUrls: ['./shop.scss']
 })
-export class Shop {
-  /** คีย์เวิร์ดค้นหา (UI เท่านั้น) */
-  query = signal<string>('');
+export class Shop implements OnInit {
+  private api = inject(GameShopService);
+  private sanitizer = inject(DomSanitizer);
+  private router = inject(Router);
 
-  /** เดโม่รายการเกม (ถ้าไม่มีภาพ ระบบจะใส่ placeholder ให้เอง) */
-  games = signal<Game[]>([
-    { id: 1, name: 'Devil May Cry 5', price: 1059, cover: null },
-    { id: 2, name: 'Sekiro',          price: 1390, cover: null },
-    { id: 3, name: 'ELDEN RING',      price: 1790, cover: null },
-    { id: 4, name: 'FINAL FANTASY XV',price: 1790, cover: null },
-    { id: 5, name: 'Far Cry 4',       price: 1799, cover: null },
-    { id: 6, name: 'Stardew Valley',  price: 315,  cover: null },
-    { id: 7, name: 'Dead by Daylight',price: 469,  cover: null },
-  ]);
+  query   = signal<string>('');
+  loading = signal<boolean>(true);
+  error   = signal<string | null>(null);
+  games   = signal<GameItem[]>([]);
+  deletingId = signal<number | null>(null); // กันกดซ้ำตอนลบ
 
-  /** รายการหลังกรอง */
+  total = computed(() => this.games().length);
   filtered = computed(() => {
     const q = (this.query() ?? '').trim().toLowerCase();
     if (!q) return this.games();
@@ -37,9 +37,59 @@ export class Shop {
     );
   });
 
-  /** จำนวนทั้งหมด (ก่อนกรอง) */
-  total = computed(() => this.games().length);
+  ngOnInit(): void { this.fetchGames(); }
 
-  edit(g: Game) { /* TODO: link ไปหน้าแก้ไขหรือเปิด dialog */ }
-  remove(g: Game) { /* TODO: ลบเกม */ }
+  private fetchGames(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.api.gamesGetAll().subscribe({
+      next: (rows: GamesGetResponse[]) => {
+        const list: GameItem[] = rows.map(r => ({
+          id:    r.game_id,
+          name:  r.name,
+          price: Number(r.price ?? 0),
+          cover: this.api.toAbsoluteUrl(r.image),
+        }));
+        this.games.set(list);
+      },
+      error: (err: any) => this.error.set(err?.message || 'โหลดข้อมูลไม่สำเร็จ'),
+      complete: () => this.loading.set(false),
+    });
+  }
+
+  /** background: url(...) center/cover no-repeat, gradient */
+  bgStyle(urlOrNull: string | null): SafeStyle {
+    const grad = 'linear-gradient(180deg, rgba(198,241,255,.10), rgba(7,4,16,.40))';
+    if (!urlOrNull) return this.sanitizer.bypassSecurityTrustStyle(grad);
+    return this.sanitizer.bypassSecurityTrustStyle(`url("${urlOrNull}") center / cover no-repeat, ${grad}`);
+  }
+
+  /** ไปหน้าแก้ไข */
+  edit(g: GameItem) {
+    this.router.navigate(['/admin/edit-game', g.id]);
+  }
+
+  /** ลบเกม (ยืนยันก่อน) */
+  remove(g: GameItem) {
+    if (this.deletingId()) return; // กำลังลบอยู่
+    if (!confirm(`ยืนยันลบ "${g.name}" ?`)) return;
+
+    this.deletingId.set(g.id);
+
+    // optimistic UI: ตัดออกก่อน แล้วค่อย rollback ถ้าพัง
+    const before = this.games();
+    this.games.set(before.filter(x => x.id !== g.id));
+
+    this.api.deleteGame(g.id).subscribe({
+      next: () => { /* สำเร็จแล้วไม่มีอะไรเพิ่ม */ },
+      error: (err: any) => {
+        alert(err?.message || 'ลบไม่สำเร็จ');
+        this.games.set(before); // rollback
+      },
+      complete: () => this.deletingId.set(null),
+    });
+  }
+
+  trackById = (_: number, g: GameItem) => g.id;
 }

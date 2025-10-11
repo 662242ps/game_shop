@@ -7,6 +7,7 @@ import { AddGameComponent } from './pages/admin/add-game/add-game';
 import { ProfileComponent } from './pages/users/profile/profile';
 import { ProfileEditComponent } from './pages/users/profile-edit/profile-edit';
 import { WalletComponent } from './pages/users/wallet/wallet';
+import { EditGameComponent } from './pages/admin/edit-game/edit-game';
 
 /* ✅ ใหม่ */
 import { Library } from './pages/users/library/library';
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: 'library', component: Library },
       { path: 'cart', component: Cart },
       { path: 'wallet', component: WalletComponent },
+      
       // { path: '', pathMatch: 'full', redirectTo: 'shop' }
     ]
   },
@@ -40,8 +42,8 @@ export const routes: Routes = [
       /* ✅ ใหม่ */
       { path: 'users', component: AdminUsers },
       { path: 'discount', component: AdminDiscount },
-      { path: 'add-game', component: AddGameComponent }
-
+      { path: 'add-game', component: AddGameComponent },
+      { path: 'edit-game/:id', component: EditGameComponent },
       // { path: '', pathMatch: 'full', redirectTo: 'shop' }
     ]
   },
