@@ -1,0 +1,191 @@
+/* ===== Theme (เหมือนหน้า edit) ===== */
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, 0.788);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169,231,234,.55);
+$blue-btn: #c6f1ff;
+$blue-btn-text: #0e2e3b;
+
+/* ปุ่มเหลี่ยมขึ้น */
+$btn-radius: 12px;
+
+:host{ display:block; min-height:100vh; background:$bg; color:$fg; }
+
+/* BG ลายจาง ๆ (ใช้ชื่อเดียวกับหน้า edit) */
+.addgame-bg{
+  inline-size:100%; min-block-size:100svh;
+  padding:clamp(12px,2vw,20px);
+  display:grid; place-items:start center;
+  background:
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    $bg;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+    pointer-events:none;
+  }
+}
+
+/* การ์ดหลัก */
+.card{
+  position:relative; z-index:1;
+  inline-size:min(1180px, 96vw);
+  background: $panel;
+  border: 2px solid $line-weak;
+  border-radius: 22px;
+  padding: clamp(16px, 2.4vw, 24px);
+  box-shadow: inset 0 2px 0 rgba(169,231,234,.18), 0 12px 48px rgba(0,0,0,.38);
+}
+
+/* หัวข้อ + ป้าย rank ขวาบน */
+.title{
+  font-size: clamp(22px, 2.4vw, 30px);
+  margin: 0 0 16px; letter-spacing:.4px;
+  position:relative;
+  .rank{
+    position:absolute; right:0; top:0;
+    transform: translateY(-4px);
+    display:inline-block; font-size:.95rem; font-weight:900;
+    padding:8px 12px; border-radius:999px; letter-spacing:.2px;
+    background: rgba(198,241,255,.12);
+    border: 1.5px solid $line-weak; color:$fg;
+  }
+}
+
+/* เลย์เอาต์ซ้าย-ขวา (เหมือน edit) */
+.grid{
+  display:grid;
+  grid-template-columns: 1.05fr 1.25fr;
+  gap: clamp(16px, 2vw, 26px);
+  @media (max-width: 1040px){ grid-template-columns: 1fr; }
+}
+
+/* กล่องรูป: ใช้ upload-box เดิม แต่ปิดการคลิก */
+.upload-box{
+  display:grid; place-content:center;
+  inline-size: 100%; max-inline-size: 560px;
+  aspect-ratio: 1 / 1;
+  background: #c3f8ff;
+  border: 2px solid $line-weak;
+  border-radius: 18px;
+  box-shadow: inset 0 2px 0 rgba(169,231,234,.35);
+  position: relative; isolation: isolate; overflow: hidden;
+
+  &.readonly{ cursor: default; }
+  &.readonly::before,
+  &.readonly::after{ display:none; }   /* ไม่แสดงไอคอน/คำว่าอัปโหลด */
+
+  img{
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center; display: block; border-radius: inherit; z-index: 1;
+  }
+}
+.hint.small{ opacity:.8; font-size:.92rem; margin-top:8px; }
+
+/* ฟิลด์ฟอร์ม (reuse ของ edit) */
+.fields{
+  display:grid; gap: 14px;
+  label{ display:grid; gap: 8px; font-weight: 700; }
+  input, textarea{
+    background: #1b0d2e; color: $fg; border: 2px solid $line-weak;
+    border-radius: 999px; padding: 14px 18px; outline: none; font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    &::placeholder{ color: rgba($fg,.55); }
+    &:focus{ border-color: $line; box-shadow: 0 0 0 3px rgba(169,231,234,.25); background: #180b2a; }
+  }
+  textarea{ border-radius: 16px; resize: vertical; min-height: 160px; }
+  input[readonly], textarea[readonly]{ opacity:.95; }
+}
+
+/* สองคอลัมน์ */
+.row-2{
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  @media (max-width: 720px){ grid-template-columns: 1fr; }
+}
+
+/* แอ็กชัน */
+.actions{ display:flex; gap:12px; justify-content:flex-end; margin-top: 2px; }
+.actions-split{
+  justify-content: space-between;
+  .actions-right{ display:flex; gap: 12px; }
+}
+
+/* ปุ่ม (reuse) */
+.btn-primary, .btn-ghost{
+  appearance:none; border-radius: $btn-radius; padding: 12px 16px; font-weight: 800;
+  display:inline-flex; align-items:center; gap: 8px; cursor:pointer;
+  border: 2px solid $line-weak; color: $fg; background: transparent;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12); filter: none;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.btn-primary{
+  background: $blue-btn; color: $blue-btn-text; border-color: rgba(0,0,0,.1);
+  &:hover{ transform: translateY(-1px); background: lighten($blue-btn, 2%); box-shadow: 0 6px 14px rgba(0,0,0,.14); }
+  &:active{ transform: translateY(0); box-shadow: 0 3px 8px rgba(0,0,0,.16); }
+}
+.btn-ghost{
+  background: transparent; color: $fg;
+  &:hover{ transform: translateY(-1px); background: rgba(169,231,234,.08); border-color: $line; box-shadow: 0 6px 14px rgba(0,0,0,.14); }
+  &:active{ transform: translateY(0); box-shadow: 0 3px 8px rgba(0,0,0,.16); }
+}
+
+/* ปุ่มลบ (reuse ของ edit) */
+$danger:       #ff5978;
+$danger-ink:   #240913;
+$danger-glow:  rgba(255, 89, 120, .45);
+
+.btn-danger{
+  appearance:none; border-radius: $btn-radius; padding: 12px 16px; font-weight: 900;
+  display:inline-flex; align-items:center; gap: 10px; cursor:pointer;
+  color:#fff;
+  background: linear-gradient(180deg, lighten($danger, 4%), $danger);
+  border: 2px solid rgba(0,0,0,.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,.22), 0 0 0 0 rgba($danger, 0);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, background .18s ease, border-color .18s ease;
+  .icon-trash{
+    position: relative; inline-size: 18px; block-size: 18px; color: $danger-ink;
+    &::before{ content:''; position:absolute; left:3px; right:3px; top:1px; height:3px; border-radius:2px; background: currentColor; }
+    &::after{
+      content:''; position:absolute; left:4px; right:4px; top:5px; bottom:2px;
+      border: 2px solid currentColor; border-top-width: 3px;
+      border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
+      background: linear-gradient(90deg, transparent 33%, currentColor 33% 37%, transparent 37% 63%, currentColor 63% 67%, transparent 67%);
+      opacity:.95;
+    }
+  }
+  &:hover{
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, lighten($danger, 6%), lighten($danger, 2%));
+    box-shadow: 0 10px 22px rgba(0,0,0,.24), 0 0 0 6px $danger-glow;
+  }
+  &:active{
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(0,0,0,.22), 0 0 0 3px rgba($danger, .30);
+    filter: saturate(1.05);
+  }
+  &:focus-visible{
+    outline: none;
+    box-shadow: 0 8px 18px rgba(0,0,0,.22), 0 0 0 6px $danger-glow;
+  }
+  &:disabled{
+    opacity:.6; cursor:not-allowed; filter: grayscale(.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  }
+}
+
+/* Scrollbar ธีมเดียวกับหน้า edit */
+.addgame-bg::-webkit-scrollbar,
+.addgame-bg *::-webkit-scrollbar{ width: 10px; height: 10px; }
+.addgame-bg::-webkit-scrollbar-track,
+.addgame-bg *::-webkit-scrollbar-track{
+  background: rgba(198,241,255,.08); border-radius: 999px;
+}
+.addgame-bg::-webkit-scrollbar-thumb,
+.addgame-bg *::-webkit-scrollbar-thumb{
+  background: rgba(198,241,255,.45); border-radius: 999px; border: 2px solid rgba(13,6,26,.8);
+}
+.addgame-bg::-webkit-scrollbar-thumb:hover,
+.addgame-bg *::-webkit-scrollbar-thumb:hover{ background: rgba(198,241,255,.65); }
+.addgame-bg, .addgame-bg *{ scrollbar-width: thin; scrollbar-color: rgba(198,241,255,.55) rgba(198,241,255,.08); }

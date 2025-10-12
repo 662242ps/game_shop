@@ -221,3 +221,12 @@ $bg-img-path: '../../../../assets/images/bg/รูปพื้นหลัง.pn
   box-shadow:0 4px 10px rgba(0,0,0,.12);
 }
 .btn-primary:hover{ transform:translateY(-1px); }
+
+.game-card.is-clickable{
+  cursor: pointer;
+  outline: none;
+}
+.game-card.is-clickable:focus-visible{
+  box-shadow: 0 0 0 3px rgba(198,241,255,.35);
+  border-radius: 14px;
+}

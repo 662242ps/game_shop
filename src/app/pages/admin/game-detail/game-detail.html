@@ -1,0 +1,70 @@
+<app-header role="admin"></app-header>
+
+<main class="addgame-bg">
+  <section class="card">
+    <h2 class="title">
+      รายละเอียดเกม
+      <span class="rank" *ngIf="rank() > 0">ขายดีอันดับ {{ rank() }}</span>
+    </h2>
+
+    <ng-container *ngIf="!loading(); else loadingTpl">
+      <ng-container *ngIf="game(); else errTpl">
+
+        <div class="grid">
+          <!-- ซ้าย: รูปปก (ใช้ upload-box เดียวกับหน้า edit แต่ปิดการอัปโหลด) -->
+          <div class="uploader">
+            <div class="upload-box has-img readonly">
+              <img *ngIf="imgUrl(game()!.image)" [src]="imgUrl(game()!.image)!" [alt]="game()!.name">
+              <span *ngIf="!imgUrl(game()!.image)" class="hint">ยังไม่มีรูป</span>
+            </div>
+            
+          </div>
+
+          <!-- ขวา: ฟิลด์อ่านอย่างเดียว ใช้สไตล์ .fields เช่นเดียวกับหน้า edit -->
+          <div class="fields">
+            <label>ชื่อ
+              <input type="text" [value]="game()!.name" readonly>
+            </label>
+
+            <label>ประเภทเกม
+              <input type="text" [value]="categoryName()" readonly>
+            </label>
+
+            <label>รายละเอียด
+              <textarea rows="5" [value]="game()!.description || '— ไม่มีรายละเอียด —'" readonly></textarea>
+            </label>
+
+            <div class="row-2">
+              <label>วันที่วางขาย
+                <input type="text" [value]="(game()!.release_date | date:'longDate')" readonly>
+              </label>
+              <label>ราคา
+                <input type="text" [value]="priceText() + ' ฿'" readonly>
+              </label>
+            </div>
+
+            <!-- แอ็กชัน: ลบซ้าย / กลับ+แก้ไข ขวา (สไตล์เดียวกับ edit) -->
+            <div class="actions actions-split">
+              <button type="button" class="btn-danger" (click)="remove()">
+                <span class="icon-trash" aria-hidden="true"></span> ลบเกม
+              </button>
+
+              <div class="actions-right">
+                <button type="button" class="btn-ghost" (click)="backToShop()">กลับหน้าร้าน</button>
+                <button type="button" class="btn-primary" (click)="edit()">แก้ไข</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+    </ng-container>
+
+    <ng-template #loadingTpl>
+      <div class="loading">กำลังโหลดข้อมูล…</div>
+    </ng-template>
+    <ng-template #errTpl>
+      <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+    </ng-template>
+  </section>
+</main>

@@ -1,319 +1,242 @@
 /* ===== Theme ===== */
 $bg: #1f0537;
-$panel: rgba(13, 6, 26, .78);
+$panel: rgba(13, 6, 26, 0.865);
 $fg: #d5feff;
 $line: #a9e7ea;
-$line-weak: rgba(169,231,234,.55);
+$line-weak: rgba(169,231,234,.45);
 $blue: #c6f1ff;
 $blue-deep: #0e2e3b;
 
+$bg-img-path: '../../../../assets/images/bg/รูปพื้นหลัง.png';
+
 :host{ display:block; min-height:100vh; color:$fg; background:$bg; }
 
-/* ==== คอนเทนเนอร์หลัก ==== */
+/* ===== BG of page ===== */
 .shop-bg{
   inline-size:100%;
   min-block-size:100svh;
-  padding:clamp(12px,2vw,20px);
-  display:flex; flex-direction:column; align-items:center; gap:12px;
+  padding:clamp(12px,2vw,22px);
+  display:flex; flex-direction:column; gap:22px;
   background:
-    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18)),
+    center / cover no-repeat fixed url(#{$bg-img-path}),
     #1f0537;
   position:relative;
-
   &::before{
     content:''; position:absolute; inset:0;
-    /* ลดความสว่างลงจากเดิม */
-    background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.25));
+    background: radial-gradient(1100px 740px at 50% 56%, rgba(0,0,0,.22), transparent 62%);
     pointer-events:none;
   }
 }
 
-/* ==== แถบหัวข้อ + ฟิลเตอร์ ==== */
-.topbar.outside{
-  inline-size:min(1280px, 96vw);
-  display:grid;
-  grid-template-columns: 1fr minmax(340px, 520px);
-  align-items:center;
-  gap:14px;
-  margin:0; padding-block:4px 6px; min-block-size:56px;
+/* ===== Panel box ===== */
+.panel{
+  position:relative; z-index:1;
+  inline-size:min(1280px, 100%);
+  margin-inline:auto;
+  background:rgba(7, 3, 15, 0.814);
+  border:1px solid $line-weak;
+  border-radius:22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
+  overflow:hidden;
+}
+.panel-head{
+  display:flex; align-items:center; gap:16px;
+  justify-content:space-between;
+  padding: clamp(12px,2.4vw,18px) clamp(16px,3vw,22px);
+  background: linear-gradient(180deg, rgba(198,241,255,.06), rgba(198,241,255,0));
+  border-block-end:1px solid $line-weak;
 }
 
-.title{
-  font-size: clamp(26px, 3vw, 44px);
-  font-weight: 900; letter-spacing:.4px; margin:0;
-}
-
+/* ===== Title 3D ===== */
 .title-3d{
-  color:#fff;
+  margin:0; font-weight:900;
+  font-size: clamp(22px, 2.4vw, 34px); color:#fff;
   text-shadow:
-    0 1px 0 #88f1ff,
-    0 2px 0 #88f1ff,
-    0 3px 0 #88f1ff,
-    0 4px 0 #120326,
-    0 10px 18px rgba(0,0,0,.35);
-  -webkit-text-stroke: .4px rgba(18,3,38,.25);
+    0 1px 0 #9be8ff, 0 2px 0 #9be8ff, 0 3px 0 #89dbff,
+    0 4px 6px rgba(137,219,255,.35);
 }
 
-/* ===== Filters row ===== */
-.filters{
-  display:flex; align-items:center; gap:12px;
-  justify-self:end; inline-size:100%;
+/* ===== Date pill ===== */
+.date-pill{
+  display:inline-flex; align-items:center; gap:12px;
+  padding: 10px 14px; border:2px solid $blue; border-radius:999px;
+  background: rgba(198,241,255,.08);
+  span{ font-weight:700; letter-spacing:.3px; }
+  .icon-cal{
+    inline-size:24px; block-size:24px; position:relative;
+    border:2px solid $blue; border-radius:6px;
+    &::before, &::after{ content:''; position:absolute; background:$blue; }
+    &::before{ inset-inline:4px; inset-block:10px auto; block-size:2px; }
+    &::after{ inline-size:2px; block-size:8px; inset:3px auto auto 6px; box-shadow:6px 0 0 $blue, 12px 0 0 $blue; }
+  }
 }
 
-/* กล่อง select ให้หน้าตาเข้าชุดกับ search และกด caret เพื่อเปิดเมนูได้ */
+/* ===== Filters ===== */
+.filters{ display:flex; align-items:center; gap:12px; }
+
+/* ===== Select ===== */
 .select-box{
-  --h: 48px;
-  display:inline-flex; align-items:center; gap:10px;
-  inline-size:240px; min-inline-size:200px; block-size:var(--h);
-  padding-inline:14px 12px;
+  position: relative;
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  inline-size:min(240px, 40vw);
+  min-inline-size:200px;
+  block-size:var(--h);
+  padding-inline:16px 42px;
   border-radius:999px;
-  background: rgba(198,241,255,.07);             /* ลดความสว่าง */
-  border:2px solid $line-weak;
+
+  background: rgba(198,241,255,.04);
+  border:1px solid rgba(169,231,234,.35);
   outline:1px solid rgba(255,255,255,.04);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 6px 18px rgba(0,0,0,.20);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 18px rgba(0,0,0,.20);
 
   select{
-    flex:1 1 auto;
-    background:transparent; border:none; outline:none; height:100%;
-    color:$fg; font:inherit;
+    flex:1 1 auto; inline-size:100%;
+    background:transparent; border:none; outline:none; color:$fg; font:inherit;
     appearance:none; -webkit-appearance:none; -moz-appearance:none;
-    option{ color:#0b1620; } /* ให้รายการในเมนูอ่านง่าย */
+    padding-right:6px; color-scheme: dark;
+    option{ background:#140a22; color:$fg; }
   }
 
-  /* caret เป็นปุ่มจริง ๆ */
   .icon-caret{
-    inline-size:24px; block-size:24px; position:relative;
-    border:2px solid $line; border-radius:6px;
-    cursor:pointer; user-select:none; z-index:1;
-    transition: transform .12s ease, background .12s ease, box-shadow .18s ease;
-
+    position:absolute; right:12px; top:50%; transform: translateY(-50%);
+    inline-size:18px; block-size:18px;
+    border:2px solid $line-weak; border-radius:4px; opacity:.9;
+    cursor: pointer; z-index: 2;
     &::after{
       content:''; position:absolute; inset:0; margin:auto;
-      inline-size:0; block-size:0;
       border-left:6px solid transparent;
       border-right:6px solid transparent;
-      border-top:8px solid $line;   /* ลูกศร */
-      transform: translateY(1px);
+      border-top:8px solid $line-weak;
+      transform: translateY(2px);
     }
-
-    @media (hover:hover) and (pointer:fine){
-      &:hover{ transform: translateY(-1px); box-shadow:0 6px 12px rgba(0,0,0,.22); }
-    }
-    &:active{ transform: translateY(0); }
-    &:focus{ outline:none; }
-    &:focus-visible{ box-shadow:0 0 0 3px rgba(198,241,255,.35); }
   }
+
+  &:hover{ background: rgba(198,241,255,.06); border-color:$blue; }
+  &:focus-within{ box-shadow: 0 0 0 3px rgba(169,231,234,.18), inset 0 0 0 1px rgba(255,255,255,.02); border-color:$blue; }
 }
 
 /* ===== Search box ===== */
-.search{
-  position:relative; justify-self:end; inline-size:100%;
+.search-box{
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  min-inline-size:min(360px, 52vw);
+  inline-size:min(420px, 60vw);
+  block-size:var(--h);
+  padding-inline:16px 14px;
+  border-radius:999px;
+  background: rgba(198,241,255,.06);
+  border:1px solid $line-weak;
+  outline:1px solid rgba(255,255,255,.04);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 18px rgba(0,0,0,.20);
+
   input{
-    inline-size:100%; height:48px; box-sizing:border-box;
-    border-radius:999px; background:#170b28;      /* มืดลง */
-    color:$fg;
-    border:2px solid $line-weak; padding:0 48px 0 16px; outline:none; font:inherit;
-    -webkit-tap-highlight-color: transparent;
-    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
-    &::placeholder{ color:rgba($fg,.70); }
-    &:focus{ border-color:$line; box-shadow:0 0 0 3px rgba(169,231,234,.25); }
-    &::-webkit-search-decoration,
-    &::-webkit-search-cancel-button{ -webkit-appearance:none; appearance:none; display:none; }
+    flex:1; background:transparent; border:none; outline:none; color:$fg; font:inherit;
+    ::placeholder{ color:rgba(213,254,255,.75); }
   }
-  @media (hover:hover) and (pointer:fine){
-    input:hover{ transform: translateY(-1px); background:#1b0d2e; }
-  }
-  .glass{
-    position:absolute; right:14px; top:50%; transform:translateY(-50%);
-    inline-size:24px; block-size:24px; pointer-events:none;
-    &::before{
-      content:''; position:absolute; inset:0; margin:auto;
-      inline-size:12px; block-size:12px; border-radius:50%;
-      box-shadow:0 0 0 3px $blue inset;
-    }
+  .icon-search{
+    inline-size:26px; block-size:26px; position:relative;
+    border:2px solid $line-weak; border-radius:50%;
     &::after{
-      content:''; position:absolute; right:-4px; bottom:-4px;
-      inline-size:10px; block-size:2.5px; background:$blue;
-      border-radius:2px; transform:rotate(45deg);
+      content:''; position:absolute; right:-6px; bottom:-6px;
+      inline-size:10px; block-size:2px; background:$line-weak; transform:rotate(45deg); border-radius:2px;
     }
   }
+  &:hover{ background: rgba(198,241,255,.08); border-color:$blue; }
+  &:focus-within{ box-shadow: 0 0 0 3px rgba(169,231,234,.18), inset 0 0 0 1px rgba(255,255,255,.02); border-color:$blue; }
 }
 
-/* ===== การ์ดครอบกริด ===== */
-.panel{
-  position:relative; z-index:1;
-  inline-size:min(1280px, 96vw);
-  background:$panel; border:2px solid $line-weak; border-radius:22px;
-  padding:clamp(18px,2.2vw,24px);
-  box-shadow: inset 0 0 0 2px rgba(169,231,234,.18), 0 12px 48px rgba(0,0,0,.38);
-}
-
-/* สถานะข้อความ */
-.state{
-  padding:28px 8px; text-align:center; opacity:.95;
-  &.error{ color:#ffb3b3; }
-  &.empty{ color:#8cf2ff; }
-}
-
-/* ===== กริดการ์ด ===== */
-.grid{
+/* ===== Grids ===== */
+.grid,
+.grid-hot{
+  padding: clamp(16px,2.4vw,24px);
   display:grid;
-  grid-template-columns: repeat(5, minmax(210px, 1fr));
-  gap: clamp(16px, 2vw, 26px);
-  @media (max-width:1180px){ grid-template-columns: repeat(4, 1fr); }
-  @media (max-width:980px) { grid-template-columns: repeat(3, 1fr); }
-  @media (max-width:720px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width:480px){ grid-template-columns: 1fr; }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: clamp(14px, 2vw, 22px);
 }
 
-/* ===== การ์ดเกม ===== */
-.game-card{
-  background: rgba(15, 8, 30, .55);
-  border-radius: 18px;
-  padding: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.28);
-  display:grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "cover  cover"
-    "meta   actions";
-  row-gap: 10px;
-  transition: transform .24s cubic-bezier(.22,.7,.18,1), box-shadow .24s ease;
-  will-change: transform;
-  -webkit-tap-highlight-color: transparent;
-
-  @media (hover:hover) and (pointer:fine){
-    &:hover{ transform: translateY(-6px); box-shadow: 0 14px 34px rgba(0,0,0,.32); }
-  }
-  &:active{ transform: translateY(0); box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+/* ===== Game card ===== */
+.game-card{ display:flex; flex-direction:column; gap:10px; }
+.game-card .cover{
+  position:relative; overflow:hidden; border-radius:16px;
+  border:1px solid rgba(198,241,255,.35);
+  background: rgba(198,241,255,.08);
+  box-shadow: 0 12px 28px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.04);
+  aspect-ratio: 3 / 4;
+  img{ position:absolute; inset:0; inline-size:100%; block-size:100%; object-fit:cover; object-position:center; display:block; }
 }
+.game-card .info{ padding-inline: 4px; display:flex; flex-direction:column; gap:8px; }
+.game-card .name{ font-weight:700; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.game-card .meta{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.game-card .price{ font-weight:700; }
 
-/* ===== ปกเกม ===== */
-.cover{
-  grid-area: cover;
-  position: relative;
-  inline-size:100%;
-  aspect-ratio: 2 / 3;
-  border-radius:16px;
-  overflow:hidden;
-  box-sizing:border-box;
-
-  &::after{
-    content:''; position:absolute; inset:0;
-    background: linear-gradient(180deg, rgba(198,241,255,.10), rgba(7,4,16,.40));
-    pointer-events:none; z-index:1; transition: filter .35s ease;
-  }
-
-  i{
-    position:absolute; inset:0;
-    display:grid; place-items:center;
-    font-size: 42px;
-    color: rgba(213,254,255,.9);
-    background: linear-gradient(135deg, rgba(198,241,255,.13), rgba(198,241,255,.04));
-    z-index:2;
-  }
-
-  @media (hover:hover) and (pointer:fine){
-    .game-card:hover &::after{ filter: brightness(1.06) saturate(1.05); }
-  }
-}
-
-.meta{
-  grid-area: meta;
-  display:flex; flex-direction:column; justify-content:center;
-  min-inline-size:0;
-}
-.name{
-  margin:0 0 6px; font-weight:800; font-size:clamp(14px, 1.6vw, 16px);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.price{ opacity:.9; }
-
-/* ปุ่มแก้ไข/ลบ */
-.actions{
-  grid-area: actions;
-  display:flex; gap:10px; align-self:center; justify-self:end; margin-top:2px;
-}
+/* ===== ปุ่มแอดมิน (วงกลม) ===== */
+.actions-admin{ display:inline-flex; align-items:center; gap:8px; }
 
 .act{
-  inline-size:40px; block-size:40px; border-radius:999px;
-  background:$blue; border:2px solid rgba(0,0,0,.12);
-  display:inline-flex; align-items:center; justify-content:center;
-  position:relative; cursor:pointer;
-  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
-  outline: none; -webkit-tap-highlight-color: transparent;
+  inline-size:40px; block-size:40px;
+  border-radius:50%;
+  display:grid; place-items:center;
+  cursor:pointer;
+  border:1.5px solid rgba(0,0,0,.12);
+  box-shadow: 0 3px 10px rgba(0,0,0,.25);
+  transition: transform .12s ease, box-shadow .2s ease, filter .15s ease;
+  color:#0e2e3b; /* ใช้กับ edit เป็นหลัก */
+}
+.act:hover{ transform: translateY(-2px); filter: brightness(1.02); }
+.act:active{ transform: translateY(0); }
 
-  @media (hover:hover) and (pointer:fine){
-    &:hover{ transform: translateY(-2px) scale(1.06); box-shadow:0 10px 18px rgba(0,0,0,.24); }
-  }
-  &:active{ transform: translateY(0) scale(.96); box-shadow:0 6px 12px rgba(0,0,0,.20); }
-  &:focus-visible{
-    box-shadow: 0 10px 18px rgba(0,0,0,.24), 0 0 0 3px rgba(198,241,255,.65);
-  }
-}
-.act.edit::before{
-  content:''; position:absolute; inline-size:18px; block-size:4px;
-  background:$blue-deep; border-radius:2px; transform: rotate(-45deg);
-}
-.act.edit::after{
-  content:''; position:absolute; right:10px; bottom:10px;
-  inline-size:6px; block-size:6px; background:$blue-deep;
-  transform: rotate(45deg); clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.act.remove::before{
-  content:''; position:absolute; inline-size:18px; block-size:3px;
-  background:$blue-deep; border-radius:2px;
+/* แก้ไข = ฟ้าอ่อน #c6f1ff */
+.act.edit{ background:#c6f1ff; }
+/* ลบ = แดงอ่อน */
+.act.remove{
+  background:#ffd7df;
+  color:#3b0e1a;
+  border-color: rgba(0,0,0,.10);
 }
 
-/* การ์ดเพิ่มเกม */
+/* ไอคอนด้วย CSS ล้วน */
+.act::before{
+  content:''; display:block; width:16px; height:3px; border-radius:2px; background: currentColor;
+}
+.act.edit::before{ transform: rotate(-45deg); } /* ดินสอเอียง */
+.act.remove::before{ transform: none; }         /* ขีดลบ */
+
+/* ===== การ์ดเพิ่มเกม ===== */
 .add-card{
   display:flex; flex-direction:column; align-items:center; text-align:center;
-  text-decoration:none; color:inherit; gap:10px; -webkit-tap-highlight-color: transparent;
+  text-decoration:none; color:inherit; gap:10px;
 }
 .add-card .thumb{
   inline-size:100%; aspect-ratio:3/4;
-  background:#c3f8ff;
-  border-radius:18px;
-  border:2px solid $line-weak;
-  display:grid; place-items:center;
-  box-shadow: 0 8px 24px rgba(0,0,0,.18);
-  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
-  will-change: transform;
-
-  @media (hover:hover) and (pointer:fine){
-    .add-card:hover &{ transform: translateY(-4px); box-shadow:0 12px 28px rgba(0,0,0,.24); }
-  }
-  .add-card:active &{ transform: translateY(0); box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  background:#c6f1ff; border-radius:18px; border:1px solid $line-weak;
+  display:grid; place-items:center; box-shadow: 0 8px 24px rgba(0,0,0,.18);
 }
 .add-card .plus{
-  position:relative; inline-size:100px; block-size:100px;
+  position:relative; inline-size:90px; block-size:90px;
   &::before, &::after{
-    content:''; position:absolute; inset:0; margin:auto;
-    background:#2a1c48; border-radius:12px;
+    content:''; position:absolute; inset:0; margin:auto; background:#0e2e3b; border-radius:10px;
   }
-  &::before{ inline-size:76px; block-size:18px; }
-  &::after { inline-size:18px; block-size:76px; }
+  &::before{ inline-size:68px; block-size:16px; }
+  &::after { inline-size:16px; block-size:68px; }
 }
 .add-card .add-caption{
-  color:#8cf2ff; text-decoration:none; font-weight:900; letter-spacing:.2px;
-  text-shadow:0 1px 0 rgba(0,0,0,.35);
-}
-.add-card:hover .add-caption{ filter:brightness(1.06); }
-
-/* ===== Responsive ===== */
-@media (max-width: 900px){
-  .topbar.outside{ grid-template-columns: 1fr; row-gap: 10px; }
-  .filters{ justify-self:stretch; }
-  .select-box{ inline-size:100%; }
+  color:#8cf2ff; font-weight:900; letter-spacing:.2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
 }
 
-@media (pointer:coarse){
-  .act{ inline-size:48px; block-size:48px; }
-  .search input{ height:52px; }
-}
+/* Empty & Loading */
+.empty, .loading{ grid-column: 1 / -1; text-align:center; opacity:.85; padding: 16px 6px; }
 
-/* ===== Reduce motion ===== */
-@media (prefers-reduced-motion: reduce){
-  *{ animation:none !important; transition:none !important; }
+/* Accessibility + clickability */
+.game-card.is-clickable{ cursor: pointer; outline: none; }
+.game-card.is-clickable:focus-visible{ box-shadow: 0 0 0 3px rgba(198,241,255,.35); border-radius: 14px; }
+
+/* Responsive */
+@media (max-width: 640px){
+  .panel-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .title-3d{ text-align:center; }
+  .filters{ width:100%; flex-direction:column; }
+  .filters .search-box, .filters .select-box{ inline-size:100%; min-inline-size:0; }
+  .search-box{ inline-size:100%; min-inline-size:0; }
 }

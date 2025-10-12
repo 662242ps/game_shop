@@ -14,7 +14,13 @@
     </div>
 
     <div class="grid grid-hot" *ngIf="!loading(); else loadingTpl">
-      <article class="game-card hot" *ngFor="let g of topSellers()">
+      <article
+        class="game-card hot is-clickable"
+        *ngFor="let g of topSellers()"
+        [routerLink]="['/user/game', g.game_id]"
+        tabindex="0" role="link"
+        (keydown.enter)="goDetail(g.game_id)"
+      >
         <div class="cover">
           <img [src]="img(g)!" alt="{{ g.name }}">
         </div>
@@ -27,7 +33,8 @@
               class="btn-cart"
               title="เพิ่มลงตะกร้า"
               aria-label="เพิ่มลงตะกร้า"
-              (click)="add2Cart(g)">
+              (click)="$event.stopPropagation(); add2Cart(g)"
+            >
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm9 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18zM6.3 6l.94 6.28A3 3 0 0 0 10.2 15h6.62a3 3 0 0 0 2.95-2.43l.98-5.57A1 1 0 0 0 19.78 5H7.28l-.26-1.56A2 2 0 0 0 5.05 2H3a1 1 0 1 0 0 2h2.05L6.3 6z" fill="currentColor"/>
               </svg>
@@ -45,43 +52,48 @@
 
       <!-- ตัวกรอง: ประเภท + ค้นหา -->
       <div class="filters">
-  <label class="select-box" aria-label="เลือกประเภทเกม">
-    <select
-      #catSelect
-      [ngModel]="catId()"
-      (ngModelChange)="catId.set($event)"
-      [disabled]="catsLoading()">
-      <option [ngValue]="null">ทั้งหมด</option>
-      <option *ngFor="let c of cats()" [ngValue]="c.category_id">
-        {{ c.category_name }}
-      </option>
-    </select>
+        <label class="select-box" aria-label="เลือกประเภทเกม">
+          <select
+            #catSelect
+            [ngModel]="catId()"
+            (ngModelChange)="catId.set($event)"
+            [disabled]="catsLoading()">
+            <option [ngValue]="null">ทั้งหมด</option>
+            <option *ngFor="let c of cats()" [ngValue]="c.category_id">
+              {{ c.category_name }}
+            </option>
+          </select>
 
-    <!-- ไอคอนที่คลิกแล้วเปิดเมนูได้จริง -->
-    <span
-      class="icon-caret"
-      role="button"
-      tabindex="0"
-      aria-label="เปิดเมนูประเภท"
-      (click)="openCatPicker(catSelect)"
-      (keydown)="handleCaretKey($event, catSelect)">
-    </span>
-  </label>
+          <!-- ไอคอนที่คลิกแล้วเปิดเมนูได้จริง -->
+          <span
+            class="icon-caret"
+            role="button"
+            tabindex="0"
+            aria-label="เปิดเมนูประเภท"
+            (click)="openCatPicker(catSelect)"
+            (keydown)="handleCaretKey($event, catSelect)">
+          </span>
+        </label>
 
-  <label class="search-box" aria-label="ค้นหาชื่อเกม">
-    <input
-      type="search"
-      [ngModel]="q()"
-      (ngModelChange)="q.set($event)"
-      placeholder="ค้นหา"
-    />
-    <span class="icon-search" aria-hidden="true"></span>
-  </label>
-</div>
+        <label class="search-box" aria-label="ค้นหาชื่อเกม">
+          <input
+            type="search"
+            [ngModel]="q()"
+            (ngModelChange)="q.set($event)"
+            placeholder="ค้นหา" />
+          <span class="icon-search" aria-hidden="true"></span>
+        </label>
+      </div>
     </div>
 
     <div class="grid" *ngIf="!loading(); else loadingTpl">
-      <article class="game-card" *ngFor="let g of filtered()">
+      <article
+        class="game-card is-clickable"
+        *ngFor="let g of filtered()"
+        [routerLink]="['/user/game', g.game_id]"
+        tabindex="0" role="link"
+        (keydown.enter)="goDetail(g.game_id)"
+      >
         <div class="cover">
           <img [src]="img(g)!" alt="{{ g.name }}">
         </div>
@@ -94,7 +106,8 @@
               class="btn-cart"
               title="เพิ่มลงตะกร้า"
               aria-label="เพิ่มลงตะกร้า"
-              (click)="add2Cart(g)">
+              (click)="$event.stopPropagation(); add2Cart(g)"
+            >
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm9 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18zM6.3 6l.94 6.28A3 3 0 0 0 10.2 15h6.62a3 3 0 0 0 2.95-2.43l.98-5.57A1 1 0 0 0 19.78 5H7.28l-.26-1.56A2 2 0 0 0 5.05 2H3a1 1 0 1 0 0 2h2.05L6.3 6z" fill="currentColor"/>
               </svg>
