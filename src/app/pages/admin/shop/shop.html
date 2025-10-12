@@ -2,20 +2,41 @@
 
 <main class="shop-bg" [attr.aria-busy]="loading()" [class.is-loading]="loading()">
 
-  <!-- Top bar: title + search -->
+  <!-- Top bar: title + filters (category + search) -->
   <div class="topbar outside">
     <h2 class="title title-3d">เกมทั้งหมด {{ total() }} เกม</h2>
 
-    <div class="search">
-      <input
-        type="search"
-        placeholder="ค้นหา"
-        [ngModel]="query()"
-        (ngModelChange)="query.set($event)"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="ค้นหาเกม" />
-      <span class="glass" aria-hidden="true"></span>
+    <div class="filters">
+      <!-- ดรอปดาวน์ประเภท -->
+      <label class="select-box" aria-label="เลือกประเภทเกม">
+        <select
+          #catSelect
+          [ngModel]="catId()"
+          (ngModelChange)="catId.set($event)"
+          [disabled]="catsLoading()">
+          <option [ngValue]="null">ทั้งหมด</option>
+          <option *ngFor="let c of cats()" [ngValue]="c.category_id">{{ c.category_name }}</option>
+        </select>
+        <span class="icon-caret"
+              role="button"
+              tabindex="0"
+              aria-label="เปิดเมนูประเภท"
+              (click)="openCatPicker(catSelect)"
+              (keydown)="handleCaretKey($event, catSelect)"></span>
+      </label>
+
+      <!-- ค้นหาชื่อ/ราคา -->
+      <div class="search">
+        <input
+          type="search"
+          placeholder="ค้นหา"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="ค้นหาเกม" />
+        <span class="glass" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
 
@@ -50,27 +71,14 @@
         </div>
 
         <div class="actions">
-  <button
-    class="act edit"
-    type="button"
-    title="แก้ไข"
-    (click)="edit(g)"
-    aria-label="แก้ไข {{ g.name }}"></button>
-
-  <button
-    class="act remove"
-    type="button"
-    title="ลบ"
-    [disabled]="deletingId() === g.id"
-    (click)="remove(g)"
-    aria-label="ลบ {{ g.name }}"></button>
-</div>
-
+          <button class="act edit" type="button" title="แก้ไข" (click)="edit(g)" aria-label="แก้ไข {{ g.name }}"></button>
+          <button class="act remove" type="button" title="ลบ" [disabled]="deletingId() === g.id" (click)="remove(g)" aria-label="ลบ {{ g.name }}"></button>
+        </div>
       </article>
     </div>
   </section>
 
   <ng-template #noData>
-    <div class="state empty">ไม่พบเกมที่ตรงกับคำค้น</div>
+    <div class="state empty">ไม่พบเกมที่ตรงกับตัวกรอง</div>
   </ng-template>
 </main>

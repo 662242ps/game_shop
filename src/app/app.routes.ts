@@ -9,11 +9,11 @@ import { ProfileEditComponent } from './pages/users/profile-edit/profile-edit';
 import { WalletComponent } from './pages/users/wallet/wallet';
 import { EditGameComponent } from './pages/admin/edit-game/edit-game';
 
-/* ✅ ใหม่ */
 import { Library } from './pages/users/library/library';
 import { Cart } from './pages/users/cart/cart';
-import { Users as AdminUsers } from './pages/admin/users/users';
+import { AdminUsersPage as AdminUsers } from './pages/admin/users/users';
 import { Discount as AdminDiscount } from './pages/admin/discount/discount';
+import { UserDetailComponent } from './pages/admin/user-detail/user-detail';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -44,6 +44,7 @@ export const routes: Routes = [
       { path: 'discount', component: AdminDiscount },
       { path: 'add-game', component: AddGameComponent },
       { path: 'edit-game/:id', component: EditGameComponent },
+      { path: 'users/:id', component: UserDetailComponent },
       // { path: '', pathMatch: 'full', redirectTo: 'shop' }
     ]
   },

@@ -110,6 +110,43 @@ $btn-radius: 12px;
   textarea{ border-radius: 16px; resize: vertical; min-height: 160px; }
 }
 
+/* ===== Category Select (สว่างเวลาเปิดเมนู + เข้าชุดกับ input) ===== */
+.fields select{
+  background: #1b0d2e; /* ช่องปิด */
+  color: $fg;
+  border: 2px solid $line-weak;
+  border-radius: 999px;
+  padding: 12px 44px 12px 18px;
+  outline: none; font: inherit; width: 100%;
+
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  color-scheme: light; /* ให้ popup โทนสว่าง */
+
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23a9e7ea' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position: right 14px center;
+
+  &:focus{
+    border-color: $line;
+    box-shadow: 0 0 0 3px rgba(169,231,234,.25);
+    background: #180b2a;
+  }
+  &:disabled{ opacity:.65; cursor:not-allowed; background-color:#140a22; }
+}
+.fields select option{ background:#e9fbff; color:#0e2e3b; }
+.fields select option:checked{ background:#c6f1ff; color:#0e2e3b; }
+.fields select option:hover,
+.fields select option:focus{ background:#dff8ff; }
+
+/* สถานะ invalid */
+.fields select.ng-invalid.ng-touched{
+  border-color:#ff5f84;
+  box-shadow:0 0 0 3px rgba(255,95,132,.18);
+}
+
 /* สองคอลัมน์ */
 .row-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; @media (max-width: 720px){ grid-template-columns: 1fr; } }
 
@@ -174,27 +211,18 @@ $danger-glow:  rgba(255, 89, 120, .45);
     box-shadow: 0 4px 10px rgba(0,0,0,.12);
   }
 
-  /* ไอคอนถังขยะด้วย CSS */
   .icon-trash{
     position: relative; inline-size: 18px; block-size: 18px; color: $danger-ink;
-    &::before{
-      content:''; position:absolute; left: 3px; right: 3px; top: 1px; height: 3px;
-      border-radius: 2px; background: currentColor;
-    }
+    &::before{ content:''; position:absolute; left:3px; right:3px; top:1px; height:3px; border-radius:2px; background: currentColor; }
     &::after{
-      content:''; position:absolute; left: 4px; right: 4px; top: 5px; bottom: 2px;
+      content:''; position:absolute; left:4px; right:4px; top:5px; bottom:2px;
       border: 2px solid currentColor; border-top-width: 3px;
       border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
-      background:
-        linear-gradient(90deg,
-          transparent 33%, currentColor 33% 37%, transparent 37% 63%,
-          currentColor 63% 67%, transparent 67%);
+      background: linear-gradient(90deg, transparent 33%, currentColor 33% 37%, transparent 37% 63%, currentColor 63% 67%, transparent 67%);
       opacity:.95;
     }
   }
 }
-
-/* Outline ทางเลือก (ถ้าต้องการ) */
 .btn-danger--outline{
   @extend .btn-danger;
   background: transparent; color: $fg; border-color: rgba(255, 120, 140, .55);
@@ -205,4 +233,29 @@ $danger-glow:  rgba(255, 89, 120, .45);
       box-shadow: 0 10px 22px rgba(0,0,0,.24), 0 0 0 6px rgba(255, 120, 140, .25);
     }
   }
+}
+
+/* ===== Scrollbar theme (หน้าแก้ไข) ===== */
+/* WebKit */
+.addgame-bg::-webkit-scrollbar,
+.addgame-bg *::-webkit-scrollbar{ width: 10px; height: 10px; }
+.addgame-bg::-webkit-scrollbar-track,
+.addgame-bg *::-webkit-scrollbar-track{
+  background: rgba(198,241,255,.08);
+  border-radius: 999px;
+}
+.addgame-bg::-webkit-scrollbar-thumb,
+.addgame-bg *::-webkit-scrollbar-thumb{
+  background: rgba(198,241,255,.45);
+  border-radius: 999px;
+  border: 2px solid rgba(13,6,26,.8);
+}
+.addgame-bg::-webkit-scrollbar-thumb:hover,
+.addgame-bg *::-webkit-scrollbar-thumb:hover{
+  background: rgba(198,241,255,.65);
+}
+/* Firefox */
+.addgame-bg, .addgame-bg *{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198,241,255,.55) rgba(198,241,255,.08);
 }

@@ -1,9 +1,223 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+/* ===== Theme ===== */
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, 0.865);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169,231,234,.45);
+$blue: #c6f1ff;
+$blue-deep: #0e2e3b;
+
+$bg-img-path: '../../../../assets/images/bg/รูปพื้นหลัง.png';
+
+:host{ display:block; min-height:100vh; color:$fg; background:$bg; }
+
+/* ===== BG of page ===== */
+.shop-bg{
+  inline-size:100%;
+  min-block-size:100svh;
+  padding:clamp(12px,2vw,22px);
+  display:flex; flex-direction:column; gap:22px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18)),
+    center / cover no-repeat fixed url(#{$bg-img-path}),
+    #1f0537;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(1100px 740px at 50% 56%, rgba(0,0,0,.22), transparent 62%);
+    pointer-events:none;
+  }
 }
+
+/* ===== Panel box ===== */
+.panel{
+  position:relative; z-index:1;
+  inline-size:min(1280px, 100%);
+  margin-inline:auto;
+  background:rgba(7, 3, 15, 0.814);
+  border:1px solid $line-weak;
+  border-radius:22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
+  overflow:hidden;
+}
+
+.panel-head{
+  display:flex; align-items:center; gap:16px;
+  justify-content:space-between;
+  padding: clamp(12px,2.4vw,18px) clamp(16px,3vw,22px);
+  background: linear-gradient(180deg, rgba(198,241,255,.06), rgba(198,241,255,0));
+  border-block-end:1px solid $line-weak;
+}
+
+/* ===== Title 3D ===== */
+.title-3d{
+  margin:0;
+  font-weight:900;
+  font-size: clamp(22px, 2.4vw, 34px);
+  color:#fff;
+  text-shadow:
+    0 1px 0 #9be8ff, 0 2px 0 #9be8ff, 0 3px 0 #89dbff,
+    0 4px 6px rgba(137,219,255,.35);
+}
+
+/* ===== Date pill ===== */
+.date-pill{
+  display:inline-flex; align-items:center; gap:12px;
+  padding: 10px 14px;
+  border:2px solid $blue; border-radius:999px;
+  background: rgba(198,241,255,.08);
+  span{ font-weight:700; letter-spacing:.3px; }
+  .icon-cal{
+    inline-size:24px; block-size:24px; position:relative;
+    border:2px solid $blue; border-radius:6px;
+    &::before, &::after{ content:''; position:absolute; background:$blue; }
+    &::before{ inset-inline:4px; inset-block:10px auto; block-size:2px; }
+    &::after{ inline-size:2px; block-size:8px; inset:3px auto auto 6px; box-shadow:6px 0 0 $blue, 12px 0 0 $blue; }
+  }
+}
+
+/* ===== Search box (มืดลง) ===== */
+.search-box{
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  min-inline-size:min(360px, 52vw);
+  inline-size:min(420px, 60vw);
+  block-size:var(--h);
+  padding-inline:16px 14px;
+  border-radius:999px;
+  background: rgba(198,241,255,.06);    /* เดิม .10 → .06 */
+  border:1px solid $line-weak;          /* เดิม 2px $blue → 1px อ่อนลง */
+  outline:1px solid rgba(255,255,255,.04);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 18px rgba(0,0,0,.20);
+  input{
+    flex:1 1 auto; background:transparent; border:none; outline:none; color:$fg; font:inherit;
+    ::placeholder{ color:rgba(213,254,255,.75); }
+  }
+  .icon-search{
+    inline-size:26px; block-size:26px; position:relative;
+    border:2px solid $line-weak; border-radius:50%;
+    &::after{
+      content:''; position:absolute; right:-6px; bottom:-6px;
+      inline-size:10px; block-size:2px; background:$line-weak; transform:rotate(45deg); border-radius:2px;
+    }
+  }
+  &:hover{ background: rgba(198,241,255,.08); border-color:$blue; }
+  &:focus-within{ box-shadow: 0 0 0 3px rgba(169,231,234,.18), inset 0 0 0 1px rgba(255,255,255,.02); border-color:$blue; }
+}
+
+/* ===== Filters row ===== */
+.filters{ display:flex; align-items:center; gap:12px; }
+
+/* ===== Select (โทนมืด + caret คลิกได้) ===== */
+.select-box{
+  position: relative;
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  inline-size:min(240px, 40vw);
+  min-inline-size: 200px;
+  block-size:var(--h);
+  padding-inline:16px 42px;   /* เผื่อพื้นที่ caret ขวา */
+  border-radius:999px;
+
+  background: rgba(198,241,255,.04);    /* มืดลงอีก */
+  border:1px solid rgba(169,231,234,.35);
+  outline:1px solid rgba(255,255,255,.04);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 18px rgba(0,0,0,.20);
+
+  select{
+    flex:1 1 auto; inline-size:100%;
+    background:transparent; border:none; outline:none; color:$fg; font:inherit;
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    padding-right:6px;
+    color-scheme: dark;    /* ขอ native dropdown โทนมืด */
+
+    /* เผื่อบางเบราว์เซอร์ยอมทาสี option */
+    option{
+      background:#140a22;  /* โทนมืด */
+      color:$fg;
+    }
+  }
+
+  .icon-caret{
+    position:absolute; right:12px; top:50%; transform: translateY(-50%);
+    inline-size:18px; block-size:18px;
+    border:2px solid $line-weak; border-radius:4px; opacity:.9;
+    cursor: pointer;           /* ให้รู้ว่ากดได้ */
+    z-index: 2;                /* อยู่บนสุดเพื่อรับคลิก */
+    &::after{
+      content:''; position:absolute; inset:0; margin:auto;
+      inline-size:0; block-size:0;
+      border-left:6px solid transparent;
+      border-right:6px solid transparent;
+      border-top:8px solid $line-weak;
+      transform: translateY(2px);
+    }
+  }
+
+  &:hover{ background: rgba(198,241,255,.06); border-color:$blue; }
+  &:focus-within{ box-shadow: 0 0 0 3px rgba(169,231,234,.18), inset 0 0 0 1px rgba(255,255,255,.02); border-color:$blue; }
+}
+
+/* ===== Grids ===== */
+.grid,
+.grid-hot{
+  padding: clamp(16px,2.4vw,24px);
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+}
+
+/* ===== Game card ===== */
+.game-card{ display:flex; flex-direction:column; gap:10px; }
+.game-card .cover{
+  position:relative; overflow:hidden; border-radius:16px;
+  border:1px solid rgba(198,241,255,.35);
+  background: rgba(198,241,255,.08);
+  box-shadow: 0 12px 28px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.04);
+  aspect-ratio: 3 / 4;
+  img{ position:absolute; inset:0; inline-size:100%; block-size:100%; object-fit:cover; object-position:center; display:block; }
+}
+.game-card .info{ padding-inline: 4px; display:flex; flex-direction:column; gap:8px; }
+.game-card .name{ font-weight:700; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.game-card .meta{ display:flex; align-items:center; justify-content:space-between; }
+.game-card .price{ font-weight:700; }
+.btn-cart{
+  inline-size:38px; block-size:38px; border-radius:10px; border:1.5px solid $blue;
+  background: rgba(198,241,255,.08); color:$fg; display:grid; place-items:center;
+  transition: transform .12s ease, background .15s ease, box-shadow .2s ease; box-shadow: 0 3px 10px rgba(0,0,0,.25);
+  &:hover{ transform: translateY(-2px); background: rgba(198,241,255,.16); }
+  &:active{ transform: translateY(0);   background: rgba(198,241,255,.22); }
+}
+
+/* Empty & Loading */
+.empty, .loading{ grid-column: 1 / -1; text-align:center; opacity:.85; padding: 16px 6px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 640px){
+  .panel-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .title-3d{ text-align:center; }
+  .filters{ width:100%; flex-direction:column; }
+  .filters .search-box, .filters .select-box{ inline-size:100%; min-inline-size:0; }
+  .search-box{ inline-size:100%; min-inline-size:0; }
+}
+
+/* ===== Popup ===== */
+.popup-backdrop{ position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 60; }
+.popup{
+  position: fixed; inset-inline: 0; top: 18vh; margin-inline: auto; inline-size: min(520px, 92vw);
+  background: rgba(13,6,26,.95); color:#d5feff; z-index: 61;
+  border: 2px solid rgba(198,241,255,.42); border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.45); padding: 16px 18px;
+}
+.popup-head{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.popup-head h3{ margin:0; font-weight:900; letter-spacing:.2px; }
+.popup-head[data-state="ok"]{ color:#b9ffcf; }
+.popup-head[data-state="error"]{ color:#ffd1d1; }
+.popup-msg{ opacity:.95; margin: 6px 0 14px; }
+.popup-actions{ display:flex; justify-content:flex-end; gap:10px; }
+.btn-primary{
+  appearance:none; border-radius:12px; padding:10px 16px; font-weight:900;
+  border:2px solid rgba(0,0,0,.1); background:#c6f1ff; color:#0e2e3b; cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+}
+.btn-primary:hover{ transform:translateY(-1px); }

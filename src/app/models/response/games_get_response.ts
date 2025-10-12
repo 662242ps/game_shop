@@ -7,5 +7,6 @@ export interface GamesGetResponse {
     image:        string;
     category_id:  number;
     created_by:   number;
+    category_name: string;
 }
 export {};

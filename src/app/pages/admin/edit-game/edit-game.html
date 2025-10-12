@@ -23,9 +23,19 @@
           <input type="text" formControlName="name" placeholder="ชื่อเกม">
         </label>
 
-        <label>ประเภท (category_id)
-          <input type="number" formControlName="category_id" min="1" placeholder="เช่น 1">
+        <!-- ✅ ประเภทเกมแบบเลือกอย่างเดียว -->
+        <label>ประเภทเกม
+          <select formControlName="category_id" [disabled]="catsLoading() || loading()">
+            <option [ngValue]="null" disabled>— เลือกประเภทเกม —</option>
+            <option *ngFor="let c of cats()" [ngValue]="c.category_id">
+              {{ c.category_name }}
+            </option>
+          </select>
         </label>
+        <div class="invalid" *ngIf="form.get('category_id')?.touched && form.get('category_id')?.invalid">
+          กรุณาเลือกประเภทเกม
+        </div>
+        <div class="hint small" *ngIf="catsError()">{{ catsError() }}</div>
 
         <label>รายละเอียด
           <textarea rows="5" formControlName="description" placeholder="รายละเอียดเกม"></textarea>

@@ -19,7 +19,7 @@ $btn-radius: 12px;
   padding:clamp(12px,2vw,20px);
   display:grid; place-items:start center;
 
-  /* ✅ เรียงพาธ: ภาพก่อน, สีพื้นทีหลัง */
+  /* เรียงพาธ: ภาพก่อน, สีพื้นทีหลัง */
   background:
     center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
     $bg;
@@ -76,14 +76,13 @@ $btn-radius: 12px;
   cursor: pointer;
   position: relative;
   isolation: isolate;
-  overflow: hidden; /* ✅ ครอบภาพตามมุมกล่อง */
+  overflow: hidden; /* ครอบภาพตามมุมกล่อง */
   transition:
     transform .18s ease,
     box-shadow .18s ease,
     border-color .18s ease,
     filter .18s ease;
 
-  /* เคลียร์ของเก่าที่ซ้อน */
   background-image: none !important;
   background-repeat: no-repeat;
   background-position: center;
@@ -117,7 +116,7 @@ $btn-radius: 12px;
     transition: opacity .18s ease, transform .18s ease;
   }
 
-  /* ✅ รูปพรีวิวปูเต็มกล่อง */
+  /* รูปพรีวิวปูเต็มกล่อง */
   img{
     position: absolute;
     inset: 0;
@@ -172,6 +171,60 @@ $btn-radius: 12px;
     border-radius: 16px; resize: vertical; min-height: 160px;
   }
 }
+
+/* ===== Category Select (สว่างเวลาเปิดเมนู + สไตล์เดียวกับ input) ===== */
+.fields select{
+  background: #1b0d2e;     /* ช่องปิด: เข้มให้เข้าชุดกับ input */
+  color: $fg;
+  border: 2px solid $line-weak;
+  border-radius: 999px;
+  padding: 12px 44px 12px 18px;   /* เผื่อพื้นที่ไอคอนขวา */
+  outline: none; font: inherit; inline-size: 100%;
+
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  color-scheme: light;           /* บอก UA ให้แสดง popup โทนสว่าง */
+
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+
+  /* caret ใหม่ */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23a9e7ea' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position: right 14px center;
+
+  &:focus{
+    border-color: $line;
+    box-shadow: 0 0 0 3px rgba(169,231,234,.25);
+    background: #180b2a;
+  }
+  &:disabled{
+    opacity:.65; cursor:not-allowed; background-color:#140a22;
+  }
+}
+
+/* รายการใน popup (รองรับดีบน Chromium/Edge/Chrome) */
+.fields select option{
+  background-color: #e9fbff;  /* ฟ้าสว่าง */
+  color: #0e2e3b;
+}
+.fields select option:checked{
+  background-color: #c6f1ff;  /* แถวที่เลือก */
+  color: #0e2e3b;
+}
+.fields select option:hover,
+.fields select option:focus{
+  background-color: #dff8ff;
+}
+
+/* สถานะ invalid ของ Angular */
+.fields select.ng-invalid.ng-touched{
+  border-color:#ff5f84;
+  box-shadow:0 0 0 3px rgba(255,95,132,.18);
+}
+.fields .invalid{
+  color:#ffd1d1; font-weight:700; margin-top:6px; font-size:.95rem;
+}
+.fields select[disabled]{ cursor: progress; opacity:.6; }
 
 /* สองคอลัมน์ของ วันที่/ราคา */
 .row-2{
@@ -232,4 +285,35 @@ $btn-radius: 12px;
     transform: translateY(0);
     box-shadow: 0 3px 8px rgba(0,0,0,.16);
   }
+}
+
+/* =======================
+   Scrollbar theme (ทั้งหน้า)
+   ======================= */
+/* WebKit (Chrome/Edge/Safari) */
+.addgame-bg::-webkit-scrollbar,
+.addgame-bg *::-webkit-scrollbar{ width: 10px; height: 10px; }
+
+.addgame-bg::-webkit-scrollbar-track,
+.addgame-bg *::-webkit-scrollbar-track{
+  background: rgba(198,241,255,.08);
+  border-radius: 999px;
+}
+
+.addgame-bg::-webkit-scrollbar-thumb,
+.addgame-bg *::-webkit-scrollbar-thumb{
+  background: rgba(198,241,255,.45);
+  border-radius: 999px;
+  border: 2px solid rgba(13,6,26,.8);  /* ขอบเข้มให้ตัดพื้น */
+}
+
+.addgame-bg::-webkit-scrollbar-thumb:hover,
+.addgame-bg *::-webkit-scrollbar-thumb:hover{
+  background: rgba(198,241,255,.65);
+}
+
+/* Firefox */
+.addgame-bg, .addgame-bg *{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198,241,255,.55) rgba(198,241,255,.08);
 }

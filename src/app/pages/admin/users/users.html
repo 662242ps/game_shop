@@ -1,2 +1,45 @@
-<app-header role="user"></app-header>
-<h1 class="title-xl">viwe_user_admin</h1>
+<app-header role="admin"></app-header>
+
+<main class="users-bg">
+  <section class="panel">
+    <div class="panel-head">
+      <h1 class="title-3d">
+        จำนวนผู้ใช้ {{ filtered().length }} คน
+      </h1>
+
+      <label class="search-box" aria-label="ค้นหา">
+        <input
+          type="search"
+          [ngModel]="q()"
+          (ngModelChange)="q.set($event)"
+          placeholder="ค้นหา"
+        />
+        <span class="icon-search" aria-hidden="true"></span>
+      </label>
+    </div>
+
+    <div class="grid" *ngIf="!loading(); else loadingTpl">
+      <article class="user-card"
+               *ngFor="let u of filtered()"
+               [routerLink]="['/admin/users', userId(u)]"  
+               role="link"
+               tabindex="0">
+        <div class="avatar-wrap">
+          <img *ngIf="avatar(u)" [src]="avatar(u)!" (error)="onImgError($event)" alt="{{u.username}}">
+          <div class="avatar-fallback" aria-hidden="true">👤</div>
+        </div>
+
+        <div class="meta">
+          <div class="name">ชื่อ {{ u.username }}</div>
+          <div class="email">อีเมล {{ u.email }}</div>
+        </div>
+      </article>
+
+      <p class="empty" *ngIf="filtered().length === 0">ไม่พบผู้ใช้</p>
+    </div>
+
+    <ng-template #loadingTpl>
+      <div class="loading">กำลังโหลดข้อมูล…</div>
+    </ng-template>
+  </section>
+</main>

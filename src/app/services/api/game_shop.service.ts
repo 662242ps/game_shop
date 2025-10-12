@@ -1,10 +1,12 @@
 // src/app/services/api/game_shop.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of  } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { Constants } from '../../pages/config/constants';
+// เดิม
+
 
 // === Models ===
 import { CreateGamePotsRequest } from '../../models/request/creategame_post_Request';
@@ -14,6 +16,13 @@ import { LoginPostResponse } from '../../models/response/login_post_response';
 import { RegisterPostRequest } from '../../models/request/register_post_request';
 import { RegisterPostResponse } from '../../models/response/register_post_response';
 import { UserDetailResponse } from '../../models/response/user_detail_response';
+import { UsersGetRespone } from '../../models/response/users_get_response';
+import { WalletPotsRequest } from '../../models/request/wallet_pots_request';
+import { WalletDepositGetResponse } from '../../models/response/walletdeposit_get_response';
+import { WalletTxnGetResponse } from '../../models/response/wallettxn_get_response';
+import { CartPostRequest } from '../../models/request/cart_post_request';
+import { CartGetResponse } from '../../models/response/cart_get_response';
+import { CatagoryGetResponse } from '../../models/response/catagory_get_response';
 
 @Injectable({ providedIn: 'root' })
 export class GameShopService {
@@ -71,6 +80,12 @@ export class GameShopService {
       catchError(this.handle)
     );
   }
+  // … ในคลาส GameShopService เพิ่มเมทอดนี้
+usersGetAll() {
+  const url = `${this.base}/users`;
+  return this.http.get<UsersGetRespone[]>(url).pipe(catchError(this.handle));
+}
+
 
   /**
    * POST /users/register
@@ -238,4 +253,94 @@ getGameById(id: number | string) {
   const url = `${this.base}/games/${id}`;
   return this.http.get<GamesGetResponse>(url).pipe(catchError(this.handle));
 }
+
+// ===== Wallet (ตามเส้น API ฝั่ง BE) =====
+
+/** POST /users/:id/wallet/deposit  body: { amount } */
+walletDeposit(userId: number | string, payload: WalletPotsRequest) {
+  const url = `${this.base}/users/deposit/${userId}`;
+  return this.http.post<WalletDepositGetResponse>(url, payload, { headers: this.json }).pipe(
+    // อัปเดต wallet ใน localStorage ให้ UI สดใหม่ (ออปชันนัล)
+    tap(res => {
+      const raw = localStorage.getItem(GameShopService.LS_USER);
+      if (!raw) return;
+      try {
+        const me = JSON.parse(raw);
+        const wallet = Number(me?.wallet ?? 0) + Number(res?.amount ?? 0);
+        localStorage.setItem(GameShopService.LS_USER, JSON.stringify({ ...me, wallet }));
+      } catch { /* ignore */ }
+    }),
+    catchError(this.handle)
+  );
+}
+
+
+/** GET /users/transaction/:id → ประวัติธุรกรรม */
+walletGetTransactions(userId: number | string) {
+  const url = `${this.base}/users/transaction/${userId}`;
+  return this.http.get<WalletTxnGetResponse[]>(url, { headers: this.json })
+    .pipe(catchError(this.handle));
+}
+
+
+/** (ออปชันนัล) GET /users/:id → ดึงข้อมูลผู้ใช้เพื่อนำ wallet_balance ไปใช้ */
+walletGetBalance(userId: number | string) {
+  // คืน UserDetailResponse ทั้งก้อน แล้วให้ component หยิบ u.wallet_balance / u.wallet ไปใช้เอง
+  const url = `${this.base}/users/${userId}`;
+  return this.http.get<UserDetailResponse>(url).pipe(catchError(this.handle));
+}
+
+/** GET /users/cartitemall/:id → รายการในตะกร้า */
+  cartGet(userId: number | string) {
+  const url = `${this.base}/users/cartitemall/${userId}`;
+  return this.http.get<CartGetResponse>(url)
+    .pipe(catchError(this.handle));
+}
+
+  /** POST /users/cartitem/add → เพิ่มเกมลงตะกร้า */
+  cartAdd(payload: CartPostRequest) {
+    const url = `${this.base}/users/cartitem/add`;
+    return this.http.post<{
+      message: string;
+      cart_id: number;
+      game_id: number;
+      quantity: number;
+    }>(url, payload, { headers: this.json }).pipe(catchError(this.handle));
+  }
+
+  /** DELETE /users/cartitem/remove → ลบเกมออกจากตะกร้า (body: { user_id, game_id }) */
+  cartRemove(payload: Pick<CartPostRequest, 'user_id' | 'game_id'>) {
+    const url = `${this.base}/users/cartitem/remove`;
+    return this.http.request<{ message: string; cart_id: number; game_id: number }>(
+      'DELETE', url, { body: payload, headers: this.json }
+    ).pipe(catchError(this.handle));
+  }
+
+  /** POST /users/cartitem/buy → ซื้อทั้งหมดในตะกร้า (ต้องส่ง user_id ใน body) */
+  cartPurchase(userId: number | string) {
+    const url = `${this.base}/users/cartitem/buy`;
+    return this.http.post<{
+      message: string;
+      user_id: number;
+      total_spent: number;
+      remaining_balance: number;
+      purchased_games: string[];
+    }>(
+      url,
+      { user_id: Number(userId) },              // ⬅️ ตามที่ Postman คุณส่ง
+      { headers: this.json }
+    ).pipe(catchError(this.handle));
+  }
+
+  getAllCategories(): Observable<CatagoryGetResponse[]> {
+  const url = `${this.base}/users/catagory`;
+  return this.http.get<CatagoryGetResponse[]>(url).pipe(
+    catchError((err) => {
+      if (err?.status === 404) return of<CatagoryGetResponse[]>([]);
+      return this.handle(err);
+    })
+  );
+}
+
+
 }

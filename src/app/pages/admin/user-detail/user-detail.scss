@@ -1,0 +1,60 @@
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, .78);
+$fg: #d5feff;
+$line: #a9e7ea;
+
+:host { display:block; min-height:100vh; color:$fg; background:$bg; }
+
+.ud-bg{
+  min-block-size:100svh; display:grid; place-items:center;
+  padding:clamp(12px,2vw,20px);
+  background:
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    $bg;
+}
+
+.ud-card{
+  inline-size:min(1200px, 96vw);
+  background:$panel; border:2px solid rgba(169,231,234,.55);
+  border-radius:22px; padding:clamp(16px,2.4vw,24px);
+  box-shadow: inset 0 0 0 2px rgba(169,231,234,.18), 0 12px 48px rgba(0,0,0,.38);
+}
+
+.ud-title{ font-size:clamp(22px,2.6vw,34px); margin:0 0 16px; }
+
+.ud-grid{
+  display:grid; grid-template-columns: 340px 1fr; gap:20px;
+}
+
+.ud-photo{
+  display:flex; align-items:center; justify-content:center;
+  img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:18px; background:#f2b32a; }
+}
+
+.ud-info{
+  .row{
+    display:grid; grid-template-columns: 160px 1fr; gap:12px;
+    margin:8px 0;
+    .label{ font-weight:900; }
+  }
+  .sub{ margin:18px 0 10px; font-size:clamp(18px,2vw,24px); font-weight:900; }
+}
+
+.table-wrap{ overflow:auto; border:2px solid rgba(169,231,234,.55); border-radius:14px; }
+.tx-table{
+  inline-size:100%; border-collapse:separate; border-spacing:0;
+  thead th{
+    position:sticky; top:0; background:#d7fbff; color:#0e2e3b;
+    font-weight:900; padding:14px 16px; border-bottom:2px solid rgba(169,231,234,.55);
+  }
+  th, td{ padding:14px 16px; border-bottom:2px solid rgba(169,231,234,.35); }
+  td.money, th.money{ text-align:right; white-space:nowrap; }
+  tbody tr:nth-child(odd){ background:rgba(169,231,234,.06); }
+}
+
+.err{ color:#ffb3b3; font-weight:700; margin-top:12px; text-align:center; }
+.loading{ text-align:center; padding:16px; opacity:.9; }
+
+@media (max-width: 900px){
+  .ud-grid{ grid-template-columns: 1fr; }
+}

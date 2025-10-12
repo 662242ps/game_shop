@@ -1,9 +1,197 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+/* ===== Theme ===== */ 
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, .78);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169,231,234,.45);
+$blue: #c6f1ff;
+$blue-deep: #0e2e3b;
+
+:host { display:block; color:$fg; }
+
+/* ===== Page BG ===== */
+.cart-bg{
+  min-height:100svh;
+  padding:clamp(12px,2vw,20px);
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18)),
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    $bg;
+  display:grid; place-items:start center;
+}
+
+/* ===== Panel ===== */
+.panel{
+  position: relative; /* ให้สรุปยึดกับ panel */
+  inline-size:min(1200px, 96vw);
+  margin-inline:auto;
+  background:$panel;
+  border:1px solid $line-weak;
+  border-radius:22px;
+  padding:clamp(16px,2.2vw,22px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 12px 48px rgba(0,0,0,.38);
+}
+
+/* ===== Title (3D แบบ shop) ===== */
+.title-3d{
+  margin:0 0 12px;
+  font-weight:900;
+  font-size:clamp(22px,2.4vw,32px);
+  color:#fff;
+  text-shadow:
+    0 1px 0 #9be8ff, 0 2px 0 #9be8ff, 0 3px 0 #89dbff,
+    0 4px 6px rgba(137,219,255,.35);
+}
+
+/* ===== States ===== */
+.error{
+  background:#5b1320;
+  border:2px solid #ff5f84;
+  padding:10px 12px;
+  border-radius:12px;
+  margin:8px 0 12px;
+}
+.loading, .empty{ opacity:.9; padding:8px 0; text-align:center; }
+
+/* ===== Grid (ไม่เว้นขวาแล้ว) ===== */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: clamp(10px, 1.4vw, 16px);
+  padding-block: 2px;
+  /* ⛔ ลบ padding-right ที่เคยกัน summary ออก เพื่อไม่ให้ดันกริด */
+}
+
+/* ===== Card (ฟีลเดียวกับ game-card) ===== */
+.card{
+  display:flex; flex-direction:column; gap:8px;
+  background:transparent; border:none; border-radius:0;
+  transition: transform .12s ease, box-shadow .2s ease;
+  &:hover .thumb img{ transform: scale(1.06); }
+}
+
+/* ===== Thumbnail (cover) ===== */
+.thumb{
+  position:relative; overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(198,241,255,.35);
+  background: rgba(198,241,255,.08);
+  box-shadow: 0 9px 24px rgba(0,0,0,.26), inset 0 0 0 1px rgba(255,255,255,.04);
+  aspect-ratio: 3 / 3.6;
+}
+.thumb img{
+  position:absolute; inset:0;
+  inline-size:100%; block-size:100%;
+  object-fit:cover; object-position:center;
+  display:block;
+  transition: transform .35s cubic-bezier(.22,.7,.18,1);
+}
+.thumb-fallback{
+  inline-size:100%; block-size:100%;
+  display:grid; place-items:center;
+  opacity:.7; font-size:28px;
+  color:$fg;
+}
+
+/* ===== Meta/Text ===== */
+.meta{
+  padding: 6px 4px 0;
+  display:flex; flex-direction:column; gap:6px;
+}
+.name{
+  margin:0; font-weight:900;
+  font-size:clamp(13px, 1.4vw, 15px);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.price, .qty{ opacity:.95; font-size:clamp(11px, 1.2vw, 13px); }
+.price{ font-weight:700; }
+
+/* ===== Total ===== */
+.total{
+  padding:4px 4px 0;
+  margin-top:-2px;
+  font-weight:800; text-align:right;
+  border-top:1px dashed $line-weak;
+}
+
+/* ===== Remove button ===== */
+.btn-remove{
+  margin:8px 0 0;
+  padding:9px 10px;
+  border-radius:12px;
+  border:1.5px solid rgba(255,95,132,.55);
+  background:#341422; color:#ffd7e2; cursor:pointer; font-weight:900;
+  box-shadow: 0 3px 10px rgba(0,0,0,.25);
+  transition: transform .12s ease, background .15s ease, box-shadow .2s ease;
+  &:hover{ transform: translateY(-2px); background:#3b1828; }
+  &:active{ transform: translateY(0); }
+}
+.btn-remove:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* ===== Add card ===== */
+.add-card{
+  text-decoration:none; color:inherit; border-style:dashed;
+  .thumb.add{ background:rgba(198,241,255,.08); svg{ opacity:.95; } }
+  &:hover .thumb.add{ background:rgba(198,241,255,.14); }
+}
+
+/* ===== Summary (ลอยขวาล่าง) ===== */
+.summary{
+  position: absolute;
+  right: clamp(12px, 2vw, 20px);
+  bottom: clamp(12px, 2vw, 20px);
+  inline-size: min(320px, 35vw); /* ย่อให้กินพื้นที่น้อยลง */
+  z-index: 2;
+
+  margin: 0;
+  padding: 12px;
+  border:1px solid $line-weak; 
+  border-radius:14px;
+  background:rgba(0,0,0,.22);
+  box-shadow: 0 10px 28px rgba(0,0,0,.32), inset 0 0 0 1px rgba(255,255,255,.03);
+
+  .row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:6px 0;
+  }
+  .total{
+    border-top:none; padding:0;
+    font-weight:900; font-size:clamp(15px,1.8vw,18px);
+  }
+  .btn-buy{ margin-top:10px; inline-size:100%; }
+}
+
+.btn-buy{
+  margin-top:10px; inline-size:100%;
+  padding:11px 14px;
+  border-radius:12px; font-weight:900;
+  border:2px solid rgba(0,0,0,.1);
+  background:$blue; color:$blue-deep; cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.22);
+  transition: transform .12s ease, box-shadow .18s ease;
+  &:hover{ transform: translateY(-1px); box-shadow:0 10px 26px rgba(0,0,0,.28); }
+  &:active{ transform: translateY(0); }
+}
+.btn-buy:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* ===== Desktop: กันโดนทับแถวล่าง ===== */
+@media (min-width: 901px){
+  .panel{ padding-bottom: 180px; } /* ปรับได้ 150–220 ตามความสูง summary */
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px){
+  .summary{
+    position: static;
+    inline-size: 100%;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 640px){
+  .grid{
+    gap:12px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+  .thumb{ aspect-ratio: 3 / 3.4; }
 }

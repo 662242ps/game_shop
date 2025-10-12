@@ -1,56 +1,99 @@
-<app-header role="user" />
+<app-header role="user"></app-header>
 
-<main class="wallet-bg">
+<main class="wallet-bg" role="main">
   <section class="card">
     <h2 class="title">Wallet Balance</h2>
 
-    <div class="summary">
+    <div class="summary" aria-live="polite">
       <div class="label">ยอดเงินที่มี</div>
       <div class="balance">{{ balance() | number }} ฿</div>
     </div>
 
-    <form [formGroup]="form" class="controls">
+    <!-- แจ้งข้อผิดพลาด (ถ้ามี) -->
+    <p *ngIf="error()" class="alert error" role="alert"
+       style="color:#ffb3b3; font-weight:700; text-align:center; margin:8px 0 0;">
+      {{ error() }}
+    </p>
+
+    <form [formGroup]="form" class="controls" (ngSubmit)="topup()">
       <div class="label">จำนวนเงินที่จะเติม</div>
 
       <div class="quick">
         <button type="button"
                 class="chip"
                 *ngFor="let q of quickAmounts"
+                [disabled]="posting() || loading()"
                 (click)="pickQuick(q)">
-          {{ q }}
+          {{ q | number }}
         </button>
       </div>
 
       <div class="amount-row">
         <input
           type="number"
-          min="0"
+          min="1"
           placeholder="00.0"
-          formControlName="amount"          
-          class="amount-input" />
-        <button type="button" class="btn-primary" (click)="topup()">เติมเงิน</button>
+          formControlName="amount"
+          class="amount-input"
+          [disabled]="posting() || loading()"
+          (keyup.enter)="topup()" />
+        <button type="submit"
+                class="btn-primary"
+                [disabled]="posting() || !form.valid">
+          {{ posting() ? 'กำลังเติม…' : 'เติมเงิน' }}
+        </button>
       </div>
     </form>
 
     <h3 class="history-title">ประวัติการทำรายการ</h3>
 
-    <div class="table-wrap">
-      <table class="tx-table">
-        <thead>
-          <tr>
-            <th>เติมเงิน/ซื้อเกม</th>
-            <th>ชื่อ</th>
-            <th class="money">จำนวนเงิน</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of txns()">
-            <td>{{ t.kind }}</td>
-            <td>{{ t.name }}</td>
-            <td class="money">{{ t.amount | number }} ฿</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <ng-container *ngIf="!loading(); else loadingRows">
+      <div class="empty" *ngIf="txns().length === 0" style="opacity:.9; text-align:center; padding:12px;">
+        ยังไม่มีธุรกรรม
+      </div>
+
+      <div class="table-wrap" *ngIf="txns().length > 0">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>เติมเงิน/ซื้อเกม</th>
+              <th>ชื่อ</th>
+              <th class="money">จำนวนเงิน</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of txns()">
+              <td>{{ t.kind }}</td>
+              <td>
+  <span [title]="(t.date | date:'yyyy-MM-dd HH:mm:ss') || ''">
+    {{ t.name }}
+  </span>
+</td>
+
+              <td class="money">{{ t.amount | number }} ฿</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingRows>
+      <div class="table-wrap">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>เติมเงิน/ซื้อเกม</th>
+              <th>ชื่อ</th>
+              <th class="money">จำนวนเงิน</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3">กำลังโหลด…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-template>
   </section>
 </main>

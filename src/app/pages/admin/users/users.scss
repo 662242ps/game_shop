@@ -1,9 +1,178 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+/* ===== Theme ===== */
+$bg: #1f0537;
+$panel: rgba(13, 6, 26, 0.903);
+$fg: #d5feff;
+$line: #a9e7ea;
+$line-weak: rgba(169, 231, 234, 0.688);
+$blue: #c6f1ff;
+$blue-deep: #0e2e3b;
+
+:host{ display:block; min-height:100vh; color:$fg; background:$bg; }
+
+/* ===== BG layer ===== */
+.users-bg{
+  inline-size:100%;
+  min-block-size:100svh;
+  padding:clamp(12px,2vw,22px);
+  display:flex; justify-content:center;
+  background:
+    center / cover no-repeat fixed url('../../../../assets/images/bg/รูปพื้นหลัง.png'),
+    #1f0537;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(1100px 740px at 50% 56%, rgba(0,0,0,.22), transparent 62%),
+      linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18));
+    pointer-events:none;
+  }
+}
+
+/* ===== Panel ===== */
+.panel{
+  position:relative; z-index:1;
+  inline-size:min(1200px, 100%);
+  background:rgba(7, 3, 15, 0.825);
+  border:1px solid $line-weak;
+  border-radius:22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
+  overflow:hidden;
+}
+
+/* ===== Head row ===== */
+.panel-head{
+  display:flex; align-items:center; gap:16px;
+  justify-content:space-between;
+  padding: clamp(12px,2.4vw,18px) clamp(16px,3vw,22px);
+  background: linear-gradient(180deg, rgba(198,241,255,.06), rgba(198,241,255,0));
+  border-block-end:1px solid $line-weak;
+}
+
+/* 3D Title (ขาว + เงาฟ้า) */
+.title-3d{
+  margin:0;
+  font-weight:900;
+  font-size: clamp(22px, 2.2vw, 32px);
+  letter-spacing:.3px;
+  color:#fff;
+  text-shadow:
+    0 1px 0 #9be8ff,
+    0 2px 0 #9be8ff,
+    0 3px 0 #89dbff,
+    0 4px 6px rgba(137,219,255,.35);
+}
+
+/* Search box (ขวา) */
+.search-box{
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  min-inline-size:min(360px, 52vw);
+  inline-size:min(420px, 60vw);
+  block-size:var(--h);
+  padding-inline:16px 14px;
+  border-radius:999px;
+  background: rgba(198,241,255,.10);
+  border:2px solid $blue;
+  outline:1px solid rgba(255,255,255,.05);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 6px 22px rgba(0,0,0,.22);
+
+  input{
+    flex:1 1 auto;
+    background:transparent;
+    border:none; outline:none;
+    color:$fg;
+    font:inherit;
+    ::placeholder{ color:rgba(213,254,255,.75); }
+  }
+
+  .icon-search{
+    inline-size:26px; block-size:26px; position:relative;
+    border:2px solid $blue; border-radius:50%;
+    &::after{
+      content:''; position:absolute; right:-6px; bottom:-6px;
+      inline-size:10px; block-size:2px;
+      background:$blue; transform:rotate(45deg);
+      border-radius:2px;
+    }
+  }
+}
+
+/* ===== Grid of users ===== */
+.grid{
+  padding: clamp(16px,2.4vw,24px);
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.user-card{
+  display:flex; flex-direction:column; gap:10px;
+}
+
+/* ===== Avatar: รูปเต็มกรอบ + fallback เฉพาะตอนจำเป็น ===== */
+.avatar-wrap{
+  inline-size:100%;
+  aspect-ratio: 1 / 1.1;
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(198,241,255,.08);
+  border: 1px solid rgba(198,241,255,.35);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+
+/* รูปยึดเต็มพื้นที่ */
+.avatar-wrap img{
+  position:absolute;
+  inset:0;
+  inline-size:100%;
+  block-size:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+/* Fallback (ไอคอน) – ให้แสดงถ้าไม่มีรูป */
+.avatar-fallback{
+  position:absolute;
+  inset:0;
+  display:flex;               /* ค่าเริ่มต้น: มองเห็น */
+  align-items:center;
+  justify-content:center;
+  font-size:52px;
+  opacity:.7;
+}
+
+/* ถ้ามี <img> ซ้อนอยู่ ให้ซ่อน fallback */
+.avatar-wrap:has(img) .avatar-fallback{
+  display:none;
+}
+
+/* ถ้ารูปพัง เราใส่ .no-img จาก TS → ให้โชว์ fallback */
+.avatar-wrap.no-img .avatar-fallback{
+  display:flex;
+}
+
+.meta{
+  display:flex; flex-direction:column; gap:6px;
+  padding-inline: 2px;
+  .name{ font-weight:700; letter-spacing:.2px; }
+  .email{ color:rgba(213,254,255,.8); font-size: .98rem; }
+}
+
+/* Empty / Loading */
+.empty, .loading{
+  grid-column: 1 / -1;
+  text-align:center;
+  opacity:.85;
+  padding: 16px 6px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px){
+  .panel-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .title-3d{ text-align:center; }
+  .search-box{ inline-size:100%; min-inline-size:0; }
+  .grid{ justify-items:center; }
 }

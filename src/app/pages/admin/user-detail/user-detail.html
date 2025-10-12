@@ -1,0 +1,61 @@
+<app-header role="admin"></app-header>
+
+<main class="ud-bg">
+  <section class="ud-card">
+    <h2 class="ud-title">ข้อมูลผู้ใช้</h2>
+
+    <div class="ud-grid">
+      <!-- รูปโปรไฟล์ -->
+      <div class="ud-photo">
+        <img [src]="avatarUrl()" alt="โปรไฟล์ผู้ใช้" />
+      </div>
+
+      <!-- ข้อมูลพื้นฐาน -->
+      <div class="ud-info">
+        <div class="row">
+          <div class="label">ชื่อ</div>
+          <div class="value">{{ user()?.username || '-' }}</div>
+        </div>
+        <div class="row">
+          <div class="label">อีเมล</div>
+          <div class="value">{{ user()?.email || '-' }}</div>
+        </div>
+
+        <h3 class="sub">ประวัติการทำรายการ</h3>
+
+        <ng-container *ngIf="!loadingTxn(); else txnLoading">
+          <div class="empty" *ngIf="txns().length === 0">ยังไม่มีธุรกรรม</div>
+
+          <div class="table-wrap" *ngIf="txns().length > 0">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>เติมเงิน/ซื้อเกม</th>
+                  <th>ชื่อรายการ</th>
+                  <th class="money">จำนวนเงิน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of txns()">
+                  <td>{{ t.kind }}</td>
+                  <td>
+                    <span [title]="(t.date | date:'yyyy-MM-dd HH:mm:ss') || ''">
+                      {{ t.name }}
+                    </span>
+                  </td>
+                  <td class="money">{{ t.amount | number }} ฿</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+
+        <ng-template #txnLoading>
+          <div class="table-wrap loading">กำลังโหลดประวัติ…</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <p *ngIf="error()" class="err">{{ error() }}</p>
+  </section>
+</main>
