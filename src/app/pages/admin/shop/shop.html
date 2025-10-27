@@ -12,16 +12,18 @@
       </div>
     </div>
 
-    <div class="grid grid-hot" *ngIf="!loading(); else loadingTpl">
+    <!-- ใช้ topLoading สำหรับส่วน Top 5 -->
+    <div class="grid grid-hot" *ngIf="!topLoading(); else loadingTpl">
       <article
         class="game-card hot is-clickable"
-        *ngFor="let g of topSellers()"
+        *ngFor="let g of top5()"
         [routerLink]="['/admin/game', g.game_id]"
-        tabindex="0" role="link"
-        (keydown.enter)="goDetail(g.game_id)"
-      >
+        [queryParams]="getRankQP(g)"
+        tabindex="0"
+        role="link"
+        (keydown.enter)="goDetail(g)">
         <div class="cover">
-          <img [src]="img(g)!" alt="{{ g.name }}">
+          <img [src]="img(g) || ''" [alt]="g.name">
         </div>
 
         <div class="info">
@@ -29,26 +31,25 @@
           <div class="meta">
             <div class="price">{{ priceTHB(g.price) }}</div>
 
-            <!-- ปุ่มแอดมิน: แก้ไข/ลบ (ทรงกลม) -->
             <div class="actions actions-admin">
               <button
                 type="button"
                 class="act edit"
                 title="แก้ไข"
                 aria-label="แก้ไข {{ g.name }}"
-                (click)="$event.stopPropagation(); edit(g)">
-              </button>
+                (click)="$event.stopPropagation(); edit(g)"></button>
               <button
                 type="button"
                 class="act remove"
                 title="ลบ"
                 aria-label="ลบ {{ g.name }}"
-                (click)="$event.stopPropagation(); remove(g)">
-              </button>
+                (click)="$event.stopPropagation(); remove(g)"></button>
             </div>
           </div>
         </div>
       </article>
+
+      <p class="empty" *ngIf="top5().length === 0">ยังไม่มีข้อมูลเกมขายดี</p>
     </div>
   </section>
 
@@ -76,8 +77,7 @@
             tabindex="0"
             aria-label="เปิดเมนูประเภท"
             (click)="openCatPicker(catSelect)"
-            (keydown)="handleCaretKey($event, catSelect)">
-          </span>
+            (keydown)="handleCaretKey($event, catSelect)"></span>
         </label>
 
         <label class="search-box" aria-label="ค้นหาชื่อเกม">
@@ -98,39 +98,37 @@
         <div class="add-caption">เพิ่มรายการเกมที่ขาย</div>
       </a>
 
-      <!-- การ์ดเกม (คลิกทั้งใบ = ไปดูรายละเอียด) -->
+      <!-- การ์ดเกมทั้งหมด -->
       <article
         class="game-card is-clickable"
-        *ngFor="let g of filtered(); let i = index"
+        *ngFor="let g of filtered()"
         [routerLink]="['/admin/game', g.game_id]"
-        [queryParams]="{ rank: i + 1 }"
-        tabindex="0" role="link"
-        (keydown.enter)="goDetail(g.game_id)"
-      >
+        [queryParams]="getRankQP(g)"
+        tabindex="0"
+        role="link"
+        (keydown.enter)="goDetail(g)">
         <div class="cover">
-          <img [src]="img(g)!" alt="{{ g.name }}">
+          <img [src]="img(g) || ''" [alt]="g.name">
         </div>
+
         <div class="info">
           <div class="name" [title]="g.name">{{ g.name }}</div>
           <div class="meta">
             <div class="price">{{ priceTHB(g.price) }}</div>
 
-            <!-- ปุ่มแอดมิน: แก้ไข/ลบ (ทรงกลม) -->
             <div class="actions actions-admin">
               <button
                 type="button"
                 class="act edit"
                 title="แก้ไข"
                 aria-label="แก้ไข {{ g.name }}"
-                (click)="$event.stopPropagation(); edit(g)">
-              </button>
+                (click)="$event.stopPropagation(); edit(g)"></button>
               <button
                 type="button"
                 class="act remove"
                 title="ลบ"
                 aria-label="ลบ {{ g.name }}"
-                (click)="$event.stopPropagation(); remove(g)">
-              </button>
+                (click)="$event.stopPropagation(); remove(g)"></button>
             </div>
           </div>
         </div>

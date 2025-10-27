@@ -1,9 +1,10 @@
-<app-header role="admin"></app-header>
+<app-header role="user"></app-header>
 
 <main class="addgame-bg">
   <section class="card">
     <h2 class="title">
       รายละเอียดเกม
+      <!-- ✅ แสดงป้ายก็ต่อเมื่อ rank() > 0 เท่านั้น -->
       <span class="rank" *ngIf="rank() > 0">ขายดีอันดับ {{ rank() }}</span>
     </h2>
 
@@ -11,19 +12,18 @@
       <ng-container *ngIf="game(); else errTpl">
 
         <div class="grid">
-          <!-- ซ้าย: รูปปก (ใช้ upload-box เดียวกับหน้า edit แต่ปิดการอัปโหลด) -->
+          <!-- ซ้าย: รูป -->
           <div class="uploader">
             <div class="upload-box has-img readonly">
               <img *ngIf="imgUrl(game()!.image)" [src]="imgUrl(game()!.image)!" [alt]="game()!.name">
               <span *ngIf="!imgUrl(game()!.image)" class="hint">ยังไม่มีรูป</span>
             </div>
-            
           </div>
 
-          <!-- ขวา: ฟิลด์อ่านอย่างเดียว ใช้สไตล์ .fields เช่นเดียวกับหน้า edit -->
+          <!-- ขวา: ข้อมูล -->
           <div class="fields">
             <label>ชื่อ
-              <input type="text" [value]="game()!.name" readonly>
+              <input type="text" [value]="game()!.name" readonly>ฆ
             </label>
 
             <label>ประเภทเกม
@@ -43,30 +43,31 @@
               </label>
             </div>
 
-            <!-- แอ็กชัน: ลบซ้าย / กลับ+แก้ไข ขวา (สไตล์เดียวกับ edit) -->
             <div class="bottom-row">
-              
-              <div class="actions">
-                <button type="button" class="btn-ghost" (click)="goBack()">กลับไปหน้าร้าน</button>
-                <button type="button" class="btn-primary big" (click)="addToCart()">
-                  เพิ่มลงตะกร้า
-                  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                    <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm9 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18zM6.3 6l.94 6.28A3 3 0 0 0 10.2 15h6.62a3 3 0 0 0 2.95-2.43l.98-5.57A1 1 0 0 0 19.78 5H7.28l-.26-1.56A2 2 0 0 0 5.05 2H3a1 1 0 1 0 0 2h2.05L6.3 6z" fill="currentColor"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
+  <div class="actions">
+    <button type="button" class="btn-ghost" (click)="goBack()">กลับไปหน้าร้าน</button>
+
+    <!-- ซ่อนปุ่มเมื่อมาจาก library -->
+    <button
+      type="button"
+      class="btn-primary big"
+      *ngIf="showAddBtn()"
+      (click)="addToCart()">
+      เพิ่มลงตะกร้า
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm9 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 16 18zM6.3 6l.94 6.28A3 3 0 0 0 10.2 15h6.62a3 3 0 0 0 2.95-2.43l.98-5.57A1 1 0 0 0 19.78 5H7.28l-.26-1.56A2 2 0 0 0 5.05 2H3a1 1 0 1 0 0 2h2.05L6.3 6z" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
           </div>
         </div>
 
       </ng-container>
     </ng-container>
 
-    <ng-template #loadingTpl>
-      <div class="loading">กำลังโหลดข้อมูล…</div>
-    </ng-template>
-    <ng-template #errTpl>
-      <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
-    </ng-template>
+    <ng-template #loadingTpl><div class="loading">กำลังโหลดข้อมูล…</div></ng-template>
+    <ng-template #errTpl><div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div></ng-template>
   </section>
 </main>

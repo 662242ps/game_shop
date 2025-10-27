@@ -1,4 +1,5 @@
-<app-header role="user"></app-header> 
+<!-- src/app/pages/users/cart/cart.html -->
+<app-header role="user"></app-header>
 
 <main class="cart-bg">
   <section class="panel">
@@ -10,7 +11,7 @@
 
       <div class="grid" *ngIf="items().length > 0; else emptyTpl">
 
-        <!-- ใช้โครง game-card/cover/info/meta แบบเดียวกับ shop -->
+        <!-- การ์ดรายการในตะกร้า -->
         <article class="game-card card" *ngFor="let it of items()">
           <div class="cover thumb">
             <img *ngIf="imgUrl(it.image); else noImg"
@@ -32,19 +33,16 @@
                       (click)="remove(it)"
                       title="นำออก"
                       aria-label="นำออกจากตะกร้า">
-                <!-- ไอคอนถังขยะ -->
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="vertical-align:-2px;margin-right:6px">
                   <path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4a1 1 0 1 1 0 2h-1v12a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V7H4a1 1 0 1 1 0-2h4V4a1 1 0 0 1 1-1Zm1 4H7v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7h-3V6h-4v1Z"/>
                 </svg>
                 นำออก
               </button>
             </div>
-
-            
           </div>
         </article>
 
-        <!-- การ์ดลิงก์กลับร้านค้า -->
+        <!-- ปุ่มกลับร้าน -->
         <a class="game-card add-card card" routerLink="/user/shop">
           <div class="cover thumb add" aria-hidden="true" style="display:grid;place-items:center;">
             <svg viewBox="0 0 24 24" width="72" height="72" aria-hidden="true">
@@ -53,24 +51,56 @@
           </div>
           <div class="info">
             <div class="name">เพิ่มเกมลงตะกร้า</div>
-            <div class="meta">
-              <div class="price">ไปยังร้านค้า</div>
-            </div>
+            <div class="meta"><div class="price">ไปยังร้านค้า</div></div>
           </div>
         </a>
 
       </div>
 
-      <!-- สรุปราคา -->
+      <!-- สรุปราคา + ส่วนลด -->
       <div class="summary" *ngIf="items().length > 0">
+        <!-- เลือกโค้ด -->
+        <div class="row">
+          <div>โค้ดส่วนลด</div>
+          <div class="code-picker">
+            <select
+  [ngModel]="selectedCodeId()"
+  (ngModelChange)="onCodeChange($event)">
+  <option [ngValue]="null">— ไม่ใช้โค้ด —</option>
+  <option *ngFor="let c of codes()" [ngValue]="c.code_id">
+    {{ c.code_name }} ({{ c.discount_value }}%)
+  </option>
+</select>
+
+          </div>
+        </div>
+
+        <!-- แจ้งเตือนขั้นต่ำ -->
+        <div class="row" *ngIf="selectedCode() && !meetsMin()">
+          <div></div>
+          <div class="warn">ยอดรวมยังไม่ถึงขั้นต่ำ {{ selectedCode()?.condition | number }} ฿</div>
+        </div>
+
         <div class="row">
           <div>จำนวนรายการ</div>
           <div>{{ count() | number }}</div>
         </div>
-        <div class="row total">
+
+        <div class="row">
           <div>ยอดรวม</div>
-          <div>฿{{ total() | number }}</div>
+          <div>฿{{ subtotal() | number }}</div>
         </div>
+
+        <div class="row" *ngIf="selectedCode() && estDiscount() > 0">
+          <div>ส่วนลด ({{ selectedCode()?.code_name }})</div>
+          <div>-฿{{ estDiscount() | number }}</div>
+        </div>
+
+        <div class="row total">
+          <div>ชำระทั้งสิ้น</div>
+          <div>฿{{ payable() | number }}</div>
+        </div>
+
         <button class="btn-buy"
                 type="button"
                 [disabled]="working() || items().length === 0"

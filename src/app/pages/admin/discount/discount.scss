@@ -1,9 +1,99 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+$fg: #e9efff; $line: #4e5aa6; $blue: #c8f4ff;
+$bg-img-path: '../../../../assets/images/bg/รูปพื้นหลัง.png';
+
+/* พื้นหลัง: ไม่ครอบทับสีทั้งหน้าแล้ว */
+.discount-bg{
+  min-height:100dvh; padding:clamp(14px,1.8vw,22px);
+  background:#000 url(#{$bg-img-path}) center 30%/cover no-repeat;
 }
+
+/* การ์ด: ทำให้มืดเฉพาะใน panel */
+.panel{
+  max-width:920px; margin:clamp(12px,1.6vw,18px) auto;
+  background:rgba(8,6,16,.86); /* มืดในการ์ด */
+  color:$fg; border:2px solid $line; border-radius:18px;
+  padding:clamp(14px,1.6vw,18px);
+  box-shadow:0 10px 22px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.02);
+  overflow:hidden; /* กันของล้นกรอบ */
+  &.is-compact{max-width:900px;}
+}
+
+/* หัวข้อ */
+.panel-head{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:12px;
+  &.between{justify-content:space-between;}
+}
+.title-3d{font-weight:900;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);
+  font-size:clamp(22px,2.6vw,30px);
+  &.small{font-size:clamp(18px,2.2vw,24px);}
+}
+
+/* ฟอร์มแบบไม่ล้น */
+.form-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px 18px;margin-top:6px;
+  &.compact{gap:10px 14px;}
+}
+.field{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center;gap:10px;min-width:0;}
+.label{font-weight:800;color:#fff;font-size:15px;white-space:nowrap;}
+
+/* อินพุต 100% ของคอลัมน์ (ไม่ล้น) */
+.input{
+  width:100%; box-sizing:border-box;
+  height:40px; border:2px solid #5865c7; border-radius:12px;
+  background:rgba(255,255,255,.06); color:#fff; padding:0 12px; font-size:14px;
+  outline:none; transition:border-color .18s, box-shadow .18s, background-color .18s;
+  &:focus{border-color:#7c89ff; box-shadow:0 0 0 3px rgba(110,124,255,.22);}
+  &[type='number']{-moz-appearance:textfield;}
+  &[type='number']::-webkit-outer-spin-button,
+  &[type='number']::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  &.sm{height:38px;}
+}
+
+/* หน่วยด้านขวา: อยู่ในกรอบเสมอ */
+.with-unit{position:relative;}
+.with-unit .input{padding-right:76px;}
+.unit{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  padding:4px 10px; border:2px solid #5865c7; border-radius:10px;
+  background:rgba(255,255,255,.04); color:#cfe3ff; font-weight:800; font-size:12px; pointer-events:none;
+  text-shadow:0 1px 0 rgba(0,0,0,.2);
+  &.sm{padding:3px 9px;}
+}
+
+/* ปุ่ม */
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+.btn-primary{
+  background:$blue;color:#08243b;border:0;border-radius:10px;
+  padding:8px 14px;font-weight:900;font-size:14px;cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.18),0 0 0 2px #a9e9f7 inset;
+  transition:transform .06s,filter .18s,opacity .18s;
+  &:hover{filter:brightness(1.06);} &:active{transform:translateY(1px);}
+  &:disabled{opacity:.6;cursor:not-allowed;}
+  &.sm{padding:8px 14px;}
+}
+.btn-secondary{
+  background:transparent;color:#cfe3ff;border:1px solid #6772d0;border-radius:10px;
+  padding:8px 12px;font-size:14px;cursor:pointer; &:hover{background:rgba(255,255,255,.06);}
+}
+
+/* ข้อความระบบ */
+.msg-ok{color:#7af7a2;margin-top:8px;font-weight:700;font-size:14px;}
+.msg-err{color:#ff9595;margin-top:8px;font-size:14px;}
+
+/* ตารางกระชับ ไม่ล้น */
+.table{width:100%;margin-top:6px;}
+.thead,.row{display:grid;grid-template-columns:1.2fr .5fr .5fr .7fr .5fr;gap:10px;align-items:center;}
+.thead{color:#b9c8ff;font-weight:800;margin-bottom:6px;font-size:14px;}
+.row{padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14px;}
+.cell.code{font-weight:700;}
+.cell.actions{display:flex;gap:8px;justify-content:flex-end;}
+.btn-edit{background:transparent;color:#bfe7ff;border:1px solid #7fcfff;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;&:hover{background:rgba(191,231,255,.08);} &.xs{padding:3px 8px;}}
+.btn-danger{background:transparent;color:#ff9fa8;border:1px solid #ff9fa8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;&.xs{padding:3px 8px;}}
+
+/* ค้นหา */
+.search-box{position:relative;}
+.search-box input{background:rgba(255,255,255,.06);border:2px solid #5865c7;border-radius:999px;padding:8px 34px 8px 12px;color:#fff;outline:none;font-size:14px;}
+.search-box .icon-search{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:currentColor;opacity:.6;}
+
+/* Responsive */
+@media (max-width:1024px){ .form-grid{grid-template-columns:1fr;} .actions{justify-content:center;} }

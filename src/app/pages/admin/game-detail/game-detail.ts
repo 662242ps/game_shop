@@ -24,11 +24,10 @@ export class AdminGameDetailComponent implements OnInit {
   errorMsg = signal<string | null>(null);
 
   game     = signal<GamesGetResponse | null>(null);
-
   cats        = signal<CatagoryGetResponse[]>([]);
   catsLoading = signal<boolean>(true);
 
-  // ป้าย "ขายดีอันดับ X" (รับจาก query ?rank=1)
+  // ⭐ ป้าย "ขายดีอันดับ X"
   rank = signal<number>(0);
 
   categoryName = computed(() => {
@@ -37,16 +36,16 @@ export class AdminGameDetailComponent implements OnInit {
     return m?.category_name ?? '';
   });
 
-  priceText = computed(() => {
-    const n = Number(this.game()?.price ?? 0);
-    return new Intl.NumberFormat('th-TH').format(n);
-  });
+  priceText = computed(() => new Intl.NumberFormat('th-TH').format(Number(this.game()?.price ?? 0)));
 
   ngOnInit(): void {
     this.id.set(Number(this.route.snapshot.paramMap.get('id')));
-    const r = Number(this.route.snapshot.queryParamMap.get('rank') ?? 0);
-    this.rank.set(Number.isFinite(r) ? r : 0);
 
+    // รับจาก query param (มากดจาก Top5/รายการ)
+    const qp = Number(this.route.snapshot.queryParamMap.get('rank'));
+    if (Number.isFinite(qp) && qp > 0) this.rank.set(qp);
+
+    // หมวดหมู่
     this.api.getAllCategories().subscribe({
       next: rows => this.cats.set(rows || []),
       error: _ => this.cats.set([]),
@@ -59,12 +58,19 @@ export class AdminGameDetailComponent implements OnInit {
   private fetch(): void {
     this.loading.set(true);
     this.errorMsg.set(null);
+
+    // ใช้เส้นเดิมของคุณ
     this.api.getGameById(this.id()).subscribe({
-      next: g => this.game.set(g),
-      error: err => {
-        this.errorMsg.set(err?.message || 'ไม่พบข้อมูลเกม');
-        this.loading.set(false);
+      next: (g) => {
+        this.game.set(g);
+
+        // ⭐ ถ้า API ของ getGameById ส่ง ranking มาด้วย ให้ใช้ค่านั้นแทน
+        const apiRank = Number(g?.ranking);
+        if (Number.isFinite(apiRank) && apiRank >= 1 && apiRank <= 5) {
+          this.rank.set(apiRank);
+        }
       },
+      error: err => this.errorMsg.set(err?.message || 'ไม่พบข้อมูลเกม'),
       complete: () => this.loading.set(false)
     });
   }
@@ -83,12 +89,6 @@ export class AdminGameDetailComponent implements OnInit {
     });
   }
 
-  edit() {
-    // ปรับ path ให้ตรงกับโปรเจกต์คุณ หากหน้าแก้ไขคือ /admin/edit-game/:id
-    this.router.navigate(['/admin/edit-game', this.id()]);
-  }
-
-  backToShop() {
-    this.router.navigateByUrl('/admin/shop');
-  }
+  edit() { this.router.navigate(['/admin/edit-game', this.id()]); }
+  backToShop() { this.router.navigateByUrl('/admin/shop'); }
 }

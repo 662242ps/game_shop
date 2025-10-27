@@ -1,2 +1,52 @@
 <app-header role="user"></app-header>
-<h1 class="title-xl">library_User</h1>
+
+<main class="library-bg">
+  <section class="panel">
+    <div class="panel-head">
+      <div class="head-left">
+        <span class="owned-badge" aria-hidden="true"></span>
+
+        <h2 class="title-3d" *ngIf="!loading(); else loadingHead">
+          เกมที่ซื้อแล้ว {{ ownedTotal() }} เกม
+        </h2>
+        <ng-template #loadingHead>
+          <h2 class="title-3d">เกมที่ซื้อแล้ว</h2>
+        </ng-template>
+      </div>
+
+      <label class="search-box" aria-label="ค้นหาชื่อเกมในคลัง">
+        <input
+          type="search"
+          [ngModel]="q()"
+          (ngModelChange)="q.set($event)"
+          placeholder="ค้นหา" />
+        <span class="icon-search" aria-hidden="true"></span>
+      </label>
+    </div>
+
+    <div *ngIf="loading()" class="loading">กำลังโหลดข้อมูล…</div>
+    <div *ngIf="!loading() && error()" class="empty">{{ error() }}</div>
+
+  
+
+<div class="grid grid-library" *ngIf="!loading() && !error()">
+  <article
+    class="game-card"
+    *ngFor="let g of filteredGames(); trackBy: trackByGame"
+    tabindex="0"
+    role="link"
+    [routerLink]="['/user/game', g.id]"
+    [queryParams]="{ from: 'library' }">
+    <div class="cover">
+      <img [src]="g.cover" alt="{{ g.title }}" />
+    </div>
+    <div class="info">
+      <div class="name" [title]="g.title">{{ g.title }}</div>
+    </div>
+  </article>
+</div>
+
+
+
+  </section>
+</main>

@@ -1,22 +1,31 @@
 // src/app/pages/users/cart/cart.ts
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';           // ⬅️ ใช้ ngModel
 import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../header/header';
 import { GameShopService } from '../../../services/api/game_shop.service';
-import { CartGetResponse } from '../../../models/response/cart_get_response'; // ✅ แก้ import ให้ถูก path
+import { CartGetResponse } from '../../../models/response/cart_get_response';
+import { DiscountCodeResponse } from '../../../models/response/discount_code_response';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, HeaderComponent],
   templateUrl: './cart.html',
-  styleUrl: './cart.scss'
+  styleUrls: ['./cart.scss'],
 })
 export class Cart implements OnInit {
   private api = inject(GameShopService);
   private router = inject(Router);
-
+   onCodeChange(v: any) {
+    if (v === '' || v === null || v === 'null' || typeof v === 'undefined') {
+      this.selectedCodeId.set(null);
+      return;
+    }
+    const n = Number(v);
+    this.selectedCodeId.set(Number.isFinite(n) ? n : null);
+  }
   userId!: number;
 
   // UI state
@@ -24,20 +33,53 @@ export class Cart implements OnInit {
   working = signal<boolean>(false);
   error   = signal<string | null>(null);
 
-  // ใช้โมเดลใหม่: items เป็น any[] ตามที่ BE ส่งมา
+  // สินค้าในตะกร้า
   items  = signal<any[]>([]);
-  total  = computed(() =>
-    this.items().reduce((s, i) => s + this.getTotal(i), 0)
-  );
-  count  = computed(() =>
-    this.items().reduce((s, i) => s + this.getQty(i), 0)
-  );
+  count  = computed(() => this.items().reduce((s, i) => s + this.getQty(i), 0));
+  subtotal = computed(() =>
+  this.items().reduce((s, it) => s + this.getTotal(it), 0)
+);
+
+
+  // โค้ดส่วนลด (ใช้ getAllDiscountCodes ตาม service ที่คุณมี)
+  codes = signal<DiscountCodeResponse[]>([]);
+  selectedCodeId = signal<number | null>(null);
+  selectedCode = computed<DiscountCodeResponse | null>(() => {
+    const id = this.selectedCodeId();
+    if (id == null) return null;
+    return this.codes().find(c => Number(c.code_id) === Number(id)) ?? null;
+  });
+
+  // เงื่อนไขขั้นต่ำ + ส่วนลดคาดการณ์ (เพื่อแสดงผลลัพธ์ล่วงหน้าเท่านั้น)
+  meetsMin = computed(() => {
+    const code = this.selectedCode();
+    const min  = Number(code?.condition ?? 0);
+    return this.subtotal() >= min;
+  });
+  estDiscount = computed(() => {
+    const code = this.selectedCode();
+    if (!code) return 0;
+    if (!this.meetsMin()) return 0;
+    const pct = Math.max(0, Number(code.discount_value) || 0) / 100;
+    return Math.round(this.subtotal() * pct * 100) / 100;
+  });
+  payable = computed(() => {
+    const pay = this.subtotal() - this.estDiscount();
+    return pay < 0 ? 0 : pay;
+  });
 
   ngOnInit(): void {
     const me = this.api.getCurrentUser();
     if (!me?.id) { this.router.navigate(['/login']); return; }
     this.userId = Number(me.id);
+
     this.loadCart();
+
+    // โหลดรายการโค้ดทั้งหมด (ถ้ามีเส้น /availablecode/:id ก็สลับมาใช้ได้)
+    this.api.getAllDiscountCodes().subscribe({
+      next: rows => this.codes.set(rows || []),
+      error: _ => this.codes.set([]),
+    });
   }
 
   private loadCart() {
@@ -45,7 +87,6 @@ export class Cart implements OnInit {
     this.error.set(null);
     this.api.cartGet(this.userId).subscribe({
       next: (res: CartGetResponse) => {
-        // res.items เป็น any[] อยู่แล้วตามโมเดลใหม่
         this.items.set(Array.isArray(res?.items) ? res.items : []);
         this.loading.set(false);
       },
@@ -53,42 +94,22 @@ export class Cart implements OnInit {
     });
   }
 
-  /** ---- Helpers สำหรับอ่านค่าจาก item แบบยืดหยุ่น ---- */
-
-  /** รูปภาพ: รองรับ field ที่พบบ่อย */
+  // ===== Helpers =====
   imgUrlFromItem(it: any): string | null {
     const raw = it?.image ?? it?.img ?? it?.cover ?? it?.thumbnail ?? null;
     return raw ? (this.api.toAbsoluteUrl(raw) || null) : null;
   }
-
-  /** ชื่อเกม: รองรับหลายฟิลด์ */
-  getName(it: any): string {
-    return String(it?.game_name ?? it?.name ?? it?.title ?? '');
-  }
-
-  /** ราคาเดี่ยว */
-  getPrice(it: any): number {
-    return Number(it?.price ?? 0);
-  }
-
-  /** จำนวน */
-  getQty(it: any): number {
-    return Number(it?.quantity ?? it?.qty ?? 0);
-  }
-
-  /** ยอดรวมต่อรายการ */
+  imgUrl(p?: string | null): string | null { return this.api.toAbsoluteUrl(p || '') || null; }
+  getName(it: any): string { return String(it?.game_name ?? it?.name ?? it?.title ?? ''); }
+  getPrice(it: any): number { return Number(it?.price ?? 0); }
+  getQty(it: any): number { return Number(it?.quantity ?? it?.qty ?? 0); }
   getTotal(it: any): number {
     const tot = it?.total_price ?? it?.total ?? null;
     return tot != null ? Number(tot) : (this.getPrice(it) * this.getQty(it));
   }
+  getGameId(it: any): number { return Number(it?.game_id ?? it?.id ?? 0); }
 
-  /** game_id สำหรับ call API ลบออก */
-  getGameId(it: any): number {
-    return Number(it?.game_id ?? it?.id ?? 0);
-  }
-
-  /** ---- Actions ---- */
-
+  // ===== Actions =====
   remove(it: any) {
     if (this.working()) return;
     const gid = this.getGameId(it);
@@ -105,17 +126,32 @@ export class Cart implements OnInit {
   }
 
   purchaseAll() {
-    if (this.working() || this.items().length === 0) return;
-    this.working.set(true);
-    this.error.set(null);
-    this.api.cartPurchase(this.userId).subscribe({
-      next: () => { this.items.set([]); this.working.set(false); alert('ซื้อเกมสำเร็จ 🎉'); },
-      error: err => { this.error.set(err?.message ?? 'ชำระเงินไม่สำเร็จ'); this.working.set(false); }
-    });
-  }
+  if (this.working() || this.items().length === 0) return;
 
-  /** ยังเก็บไว้เผื่อ template เดิมเรียกใช้โดยส่ง path ตรง ๆ */
-  imgUrl(p?: string | null): string | null {
-    return this.api.toAbsoluteUrl(p || '') || null;
-  }
+  const code = this.selectedCode();
+  const meetsMin =
+    !code ||
+    !(code.condition != null && Number(code.condition) > 0) ||
+    this.subtotal() >= Number(code.condition);   // << แก้ชื่อให้ถูก
+
+  const codeIdToUse = (code && meetsMin) ? Number(code.code_id) : undefined;
+
+  this.working.set(true);
+  this.error.set(null);
+
+  this.api.cartPurchase(this.userId, codeIdToUse).subscribe({
+    next: (res) => {
+      this.items.set([]);
+      this.selectedCodeId.set(null);
+      this.working.set(false);
+      const paid = (res as any)?.charged_total;
+      alert(paid != null
+        ? `ซื้อเกมสำเร็จ 🎉 ชำระจริง ฿${Number(paid).toLocaleString('th-TH')}`
+        : 'ซื้อเกมสำเร็จ 🎉');
+    },
+    error: err => { this.error.set(err?.message ?? 'ชำระเงินไม่สำเร็จ'); this.working.set(false); }
+  });
+}
+
+
 }

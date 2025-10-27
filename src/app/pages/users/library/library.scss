@@ -1,9 +1,133 @@
-.title-xl{
-  color: #fff;                 /* สีขาว */
-  font-size: clamp(28px, 3.6vw, 44px); /* ตัวใหญ่/ตอบสนองจอ */
-  font-weight: 900;            /* หนา */
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-  /* ถ้าอยากให้เด่นขึ้นนิด */
-  /* text-shadow: 0 2px 12px rgba(0,0,0,.35); */
+/* ===== Theme (เหมือนหน้า shop) ===== */
+$bg: #1f0537;
+$fg: #d5feff;
+$blue: #c6f1ff;
+$line-weak: rgba(169,231,234,.45);
+
+$bg-img-path: '../../../../assets/images/bg/รูปพื้นหลัง.png';
+
+:host{ display:block; min-height:100vh; color:$fg; background:$bg; }
+
+/* ===== BG ===== */
+.library-bg{
+  inline-size:100%;
+  min-block-size:100svh;
+  padding:clamp(12px,2vw,22px);
+  display:flex; flex-direction:column; gap:22px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.18)),
+    center / cover no-repeat fixed url(#{$bg-img-path}),
+    #1f0537;
+  position:relative;
+  &::before{
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(1100px 740px at 50% 56%, rgba(0,0,0,.22), transparent 62%);
+    pointer-events:none;
+  }
+}
+
+/* ===== Panel ===== */
+.panel{
+  position:relative; z-index:1;
+  inline-size:min(1280px, 100%);
+  margin-inline:auto;
+  background:rgba(7, 3, 15, 0.814);
+  border:1px solid $line-weak;
+  border-radius:22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
+  overflow:hidden;
+}
+
+/* ===== Header row ===== */
+.panel-head{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding: clamp(12px,2.4vw,18px) clamp(16px,3vw,22px);
+  background: linear-gradient(180deg, rgba(198,241,255,.06), rgba(198,241,255,0));
+  border-block-end:1px solid $line-weak;
+}
+.head-left{ display:flex; align-items:center; gap:10px; }
+
+/* ===== Title 3D ===== */
+.title-3d{
+  margin:0;
+  font-weight:900;
+  font-size: clamp(22px, 2.4vw, 34px);
+  color:#fff;
+  text-shadow:
+    0 1px 0 #9be8ff, 0 2px 0 #9be8ff, 0 3px 0 #89dbff,
+    0 4px 6px rgba(137,219,255,.35);
+}
+
+/* ===== Owned badge (วงกลมเขียวซ้ายหัวข้อ) ===== */
+.owned-badge{
+  inline-size:36px; block-size:36px; border-radius:50%;
+  background:#24cf7a; box-shadow:0 6px 14px rgba(36,207,122,.35); position:relative;
+}
+.owned-badge::after{
+  content:''; position:absolute; inset:0; margin:auto; inline-size:22px; block-size:22px;
+  background:#fff;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') no-repeat center/contain;
+          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') no-repeat center/contain;
+}
+
+/* ===== Search box (เหมือน shop) ===== */
+.search-box{
+  --h: 44px;
+  display:inline-flex; align-items:center; gap:8px;
+  min-inline-size:min(360px, 52vw);
+  inline-size:min(420px, 60vw);
+  block-size:var(--h);
+  padding-inline:16px 14px;
+  border-radius:999px;
+  background: rgba(198,241,255,.06);
+  border:1px solid $line-weak;
+  outline:1px solid rgba(255,255,255,.04);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), 0 4px 18px rgba(0,0,0,.20);
+  input{
+    flex:1 1 auto; background:transparent; border:none; outline:none; color:$fg; font:inherit;
+    ::placeholder{ color:rgba(213,254,255,.75); }
+  }
+  .icon-search{
+    inline-size:26px; block-size:26px; position:relative;
+    border:2px solid $line-weak; border-radius:50%;
+    &::after{
+      content:''; position:absolute; right:-6px; bottom:-6px;
+      inline-size:10px; block-size:2px; background:$line-weak; transform:rotate(45deg); border-radius:2px;
+    }
+  }
+  &:hover{ background: rgba(198,241,255,.08); border-color:$blue; }
+  &:focus-within{ box-shadow: 0 0 0 3px rgba(169,231,234,.18), inset 0 0 0 1px rgba(255,255,255,.02); border-color:$blue; }
+}
+
+/* ===== Grid (การ์ดเหมือนภาพตัวอย่าง) ===== */
+.grid-library{
+  padding: clamp(16px,2.4vw,24px);
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.game-card{ display:flex; flex-direction:column; gap:10px; }
+.game-card .cover{
+  position:relative; overflow:hidden; border-radius:16px;
+  border:1px solid rgba(198,241,255,.35);
+  background: rgba(198,241,255,.08);
+  box-shadow: 0 12px 28px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.04);
+  aspect-ratio: 3 / 4;
+  img{ position:absolute; inset:0; inline-size:100%; block-size:100%; object-fit:cover; object-position:center; display:block; }
+}
+.game-card .info{ padding-inline: 4px; }
+.game-card .name{
+  font-weight:700; letter-spacing:.2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* Empty */
+.empty{ grid-column: 1 / -1; text-align:center; opacity:.85; padding: 8px 6px 18px; }
+
+/* Responsive */
+@media (max-width: 640px){
+  .panel-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .title-3d{ text-align:center; }
+  .search-box{ inline-size:100%; min-inline-size:0; }
 }

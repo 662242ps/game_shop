@@ -1,2 +1,91 @@
 <app-header role="user"></app-header>
-<h1 class="title-xl">discount_admin</h1>
+
+<main class="discount-bg">
+  <!-- การ์ดฟอร์ม -->
+  <section class="panel is-compact">
+    <div class="panel-head">
+      <h2 class="title-3d">{{ editingId() ? 'แก้ไขโค้ดส่วนลด' : 'เพิ่มโค้ดส่วนลด' }}</h2>
+    </div>
+
+    <div class="form-grid compact">
+      <label class="field">
+        <span class="label">ชื่อ</span>
+        <input type="text" class="input sm" placeholder="GAME50"
+               [ngModel]="codeName()" (ngModelChange)="codeName.set($event)" />
+      </label>
+
+      <label class="field">
+        <span class="label">จำนวน</span>
+        <div class="with-unit">
+          <input type="number" min="1" class="input sm"
+                 [ngModel]="maxUsage()" (ngModelChange)="maxUsage.set($event)" />
+          <span class="unit sm">ครั้ง</span>
+        </div>
+      </label>
+
+      <label class="field">
+        <span class="label">ลด</span>
+        <div class="with-unit">
+          <input type="number" min="1" max="100" class="input sm"
+                 [ngModel]="discountValue()" (ngModelChange)="discountValue.set($event)" />
+          <span class="unit sm">%</span>
+        </div>
+      </label>
+
+      <label class="field">
+        <span class="label">ขั้นต่ำต้องจ่าย</span>
+        <div class="with-unit">
+          <input type="number" min="0" class="input sm"
+                 placeholder="เช่น 500 (เว้นว่าง = ไม่กำหนด)"
+                 [ngModel]="minSpend()" (ngModelChange)="onMinSpendChange($event)" />
+          <span class="unit sm">฿</span>
+        </div>
+      </label>
+    </div>
+
+    <div class="actions compact">
+      <button type="button" class="btn-primary sm"
+              [disabled]="!canSubmit || loading()" (click)="submit()">
+        {{ loading() ? 'กำลังบันทึก…' : (editingId() ? 'บันทึกการแก้ไข' : 'เพิ่มโค้ด') }}
+      </button>
+      <button type="button" class="btn-secondary sm" *ngIf="editingId()" (click)="cancelEdit()">ยกเลิก</button>
+    </div>
+
+    <p class="msg-ok" *ngIf="okMsg()">{{ okMsg() }}</p>
+    <p class="msg-err" *ngIf="error()">เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่</p>
+  </section>
+
+  <!-- การ์ดตาราง -->
+  <section class="panel is-compact">
+    <div class="panel-head between">
+      <h2 class="title-3d small">โค้ดทั้งหมด</h2>
+
+      <label class="search-box" aria-label="ค้นหาโค้ด">
+        <input type="search" class="sm" placeholder="ค้นหาโค้ด / % / จำนวน / ขั้นต่ำ"
+               [ngModel]="q()" (ngModelChange)="q.set($event)" />
+        <span class="icon-search" aria-hidden="true"></span>
+      </label>
+    </div>
+
+    <div class="table compact" *ngIf="!listLoad(); else loadingList">
+      <div class="thead">
+        <div>ชื่อ</div><div>ลด</div><div>ใช้ได้</div><div>ขั้นต่ำต้องจ่าย</div><div></div>
+      </div>
+
+      <div class="row" *ngFor="let c of filtered(); trackBy: trackById">
+        <div class="cell code">{{ c.code_name }}</div>
+        <div class="cell">{{ c.discount_value }}%</div>
+        <div class="cell">{{ c.max_usage }} ครั้ง</div>
+        <div class="cell">{{ thb(c.condition) }}</div>
+        <div class="cell actions">
+          <button class="btn-edit xs" (click)="startEdit(c)">แก้ไข</button>
+          <button class="btn-danger xs" (click)="remove(c)">ลบ</button>
+        </div>
+      </div>
+
+      <p class="empty" *ngIf="filtered().length === 0">ยังไม่มีโค้ดส่วนลด</p>
+    </div>
+
+    <ng-template #loadingList><div class="loading">กำลังโหลดโค้ด…</div></ng-template>
+  </section>
+</main>

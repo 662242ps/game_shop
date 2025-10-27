@@ -1,12 +1,12 @@
 // src/app/services/api/game_shop.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, of  } from 'rxjs';
+import { Observable, throwError, of, map } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { Constants } from '../../pages/config/constants';
 // เดิม
-
+// ด้านบนไฟล์ game_shop.service.ts
 
 // === Models ===
 import { CreateGamePotsRequest } from '../../models/request/creategame_post_Request';
@@ -23,6 +23,10 @@ import { WalletTxnGetResponse } from '../../models/response/wallettxn_get_respon
 import { CartPostRequest } from '../../models/request/cart_post_request';
 import { CartGetResponse } from '../../models/response/cart_get_response';
 import { CatagoryGetResponse } from '../../models/response/catagory_get_response';
+import { GameRankingItem } from '../../models/response/game_ranking_response';
+import { MygamesGetResponse } from '../../models/response/mygames_get_response';
+import { DiscountCodeResponse } from '../../models/response/discount_code_response';
+import { DiscountCodeCreateRequest, DiscountCodeUpdateRequest } from '../../models/request/discount_code_request';
 
 @Injectable({ providedIn: 'root' })
 export class GameShopService {
@@ -308,6 +312,13 @@ walletGetBalance(userId: number | string) {
     }>(url, payload, { headers: this.json }).pipe(catchError(this.handle));
   }
 
+  /** ดึง 5 เกมขายดีจากแบ็กเอนด์ (เส้นจริงเป็น GET /games/ranking) */
+  gameRankingUpdate(): Observable<GameRankingItem[]> {
+    return this.http
+      .get<{ message: string; top5: GameRankingItem[] }>(`${this.base}/games/ranking`)
+      .pipe(map(res => res?.top5 ?? []));
+  }
+
   /** DELETE /users/cartitem/remove → ลบเกมออกจากตะกร้า (body: { user_id, game_id }) */
   cartRemove(payload: Pick<CartPostRequest, 'user_id' | 'game_id'>) {
     const url = `${this.base}/users/cartitem/remove`;
@@ -316,21 +327,31 @@ walletGetBalance(userId: number | string) {
     ).pipe(catchError(this.handle));
   }
 
-  /** POST /users/cartitem/buy → ซื้อทั้งหมดในตะกร้า (ต้องส่ง user_id ใน body) */
-  cartPurchase(userId: number | string) {
-    const url = `${this.base}/users/cartitem/buy`;
-    return this.http.post<{
-      message: string;
-      user_id: number;
-      total_spent: number;
-      remaining_balance: number;
-      purchased_games: string[];
-    }>(
-      url,
-      { user_id: Number(userId) },              // ⬅️ ตามที่ Postman คุณส่ง
-      { headers: this.json }
-    ).pipe(catchError(this.handle));
+  // game_shop.service.ts
+cartPurchase(userId: number | string, discount?: number | string | null) {
+  const url = `${this.base}/users/cartitem/buy`;
+  const body: any = { user_id: Number(userId) };
+
+  // รองรับส่งเป็น code_id (number) หรือ code_name (string)
+  if (typeof discount === 'number' && Number.isFinite(discount)) {
+    body.discount_code_id = Number(discount);
+  } else if (typeof discount === 'string' && discount.trim()) {
+    body.discount_code = discount.trim();
   }
+
+  return this.http.post<{
+    message: string;
+    user_id: number;
+    original_cart_total?: number;
+    discount_applied?: number;
+    charged_total?: number;
+    remaining_balance?: number;
+    used_code?: string | null;
+    purchased_games?: string[];
+  }>(url, body, { headers: this.json }).pipe(catchError(this.handle));
+}
+
+  
 
   getAllCategories(): Observable<CatagoryGetResponse[]> {
   const url = `${this.base}/users/catagory`;
@@ -340,6 +361,39 @@ walletGetBalance(userId: number | string) {
       return this.handle(err);
     })
   );
+}
+
+myLibraryGet(userId: number): Observable<MygamesGetResponse[]> {
+  // ให้แน่ใจว่า base ชี้ไปโดเมนถูก และมี /api ข้างหน้าเสมอ
+  return this.http
+    .get<{ message: string; user_id: number; total_games: number; games: MygamesGetResponse[] }>(
+      `${this.base}/games/library/${userId}`
+    )
+    .pipe(map(res => res?.games ?? []));
+}
+
+// ===== Discount APIs =====
+getAllDiscountCodes(): Observable<DiscountCodeResponse[]> {
+  const url = `${this.base}/games/getallcode`;
+  return this.http.get<DiscountCodeResponse[]>(url).pipe(catchError(this.handle));
+}
+
+createDiscountCode(body: DiscountCodeCreateRequest): Observable<{ message: string; code_id: number }> {
+  const url = `${this.base}/games/createcode`;
+  return this.http.post<{ message: string; code_id: number }>(url, body, { headers: this.json })
+    .pipe(catchError(this.handle));
+}
+
+updateDiscountCode(id: number, body: DiscountCodeUpdateRequest): Observable<{ message: string }> {
+  const url = `${this.base}/games/editcode/${id}`;
+  return this.http.put<{ message: string }>(url, body, { headers: this.json })
+    .pipe(catchError(this.handle));
+}
+
+deleteDiscountCode(id: number): Observable<{ message: string }> {
+  const url = `${this.base}/games/deletecode/${id}`;
+  return this.http.delete<{ message: string }>(url)
+    .pipe(catchError(this.handle));
 }
 
 
